@@ -1,17 +1,13 @@
 import matplotlib.pyplot as plt
 
 
-from scipy.sparse import spdiags, eye
-
-from scipy.sparse.linalg import spsolve
-
+from scipy.sparse import spdiags
 
 import numpy as np
 
 
 color_gridlines_major = '#666666'
 color_gridlines_minor = '#999999'
-
 
 
 
@@ -41,11 +37,6 @@ d_0       = -2 * np.ones(Jx+1)
 d_plus_1  = +1 * np.ones(Jx+1)
 
 D_xx = spdiags([d_minus_1, d_0, d_plus_1], [-1,0,1], Jx+1, Jx+1, 'csr') / dx**2
-
-E = eye(Jx+1)
-
-
-A = E - 0.5 * 1j * dt * D_xx
 
 
 
@@ -77,8 +68,7 @@ u = u_ref
 
 
 
-
-A = A[1:-1, 1:-1]
+D_xx = D_xx[1:-1, 1:-1]
 u = u[1:-1]
 
 u_complete = np.zeros_like(u_ref)
@@ -111,10 +101,8 @@ fig_temp = plt.figure("figure_1", figsize=(8, 8), facecolor="white")
 #--------------------------------------------------------------------------------------
 ax_1 = fig_temp.add_subplot(411)
 
-u_complete[1:-1] = u[:]
-
-line_u_abs_squared,     = ax_1.plot(x, np.abs(u_complete), linewidth=1.0, linestyle='-', color='k',         label='u')
-line_u_ref_abs_squared, = ax_1.plot(x, np.abs(u_ref)**2,   linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+line_u_abs_squared,     = ax_1.plot(x, np.abs(u_complete)**2,     linewidth=1.0, linestyle='-', color='k',         label='u')
+line_u_ref_abs_squared, = ax_1.plot(x, np.abs(u_ref)**2, linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
 
 ax_1.set_ylim(-0.1, 1.1)
 
@@ -131,7 +119,7 @@ ax_1.legend(loc='upper right', fancybox=False, ncol=2)
 ax_2 = fig_temp.add_subplot(412)
 
 line_u_real,     = ax_2.plot(x, np.real(u_complete),     linewidth=1.0, linestyle='-', color='k', label='u')
-line_u_ref_real, = ax_2.plot(x,       np.real(u_ref), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+line_u_ref_real, = ax_2.plot(x, np.real(u_ref), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
 
 ax_2.set_ylim(-1.1, 1.1)
 
@@ -148,7 +136,7 @@ ax_2.legend(loc='upper right', fancybox=False, ncol=2)
 ax_3 = fig_temp.add_subplot(413)
 
 line_u_imag,     = ax_3.plot(x, np.imag(u_complete),     linewidth=1.0, linestyle='-', color='k', label='u')
-line_u_ref_imag, = ax_3.plot(x,       np.imag(u_ref), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+line_u_ref_imag, = ax_3.plot(x, np.imag(u_ref), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
 
 ax_3.set_ylim(-1.1, 1.1)
 
@@ -225,7 +213,7 @@ for n in np.arange(times.size):
         
         nr_times_analysis = nr_times_analysis + 1
     
-    u = spsolve(A, u)
+    u = u + 0.5 * dt * 1j * D_xx * u
     
 
 
