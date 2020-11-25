@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from PyQt5 import QtWidgets 
 
 
+
 from scipy.sparse import spdiags
 
 import numpy as np
