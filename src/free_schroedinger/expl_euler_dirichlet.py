@@ -195,14 +195,19 @@ for n in np.arange(times.size):
     print('t: {0:1.2f}'.format(t))
     print()
     
-    u_ref = gaussian(x, t, x0, sigma_0, k0)
     
-    u_complete[1:-1] = u[:]
-    
-    times_analysis[nr_times_analysis] = t 
-    rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
     
     if n % n_mod_times_analysis == 0:
+        
+        
+        u_ref = gaussian(x, t, x0, sigma_0, k0)
+    
+        u_complete[1:-1] = u[:]
+        
+        times_analysis[nr_times_analysis] = t 
+        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
+        
+        
     
         line_u_abs_squared.set_ydata(np.abs(u_complete)**2)
         line_u_ref_abs_squared.set_ydata(np.abs(u_ref)**2)
