@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+from PyQt5 import QtWidgets 
+
 
 from scipy.sparse import spdiags
 
@@ -96,7 +98,14 @@ print(times_analysis[-1])
 plt.ion()
 
 #======================================================================================
-fig_temp = plt.figure("figure_1", figsize=(8, 8), facecolor="white")
+fig_temp = plt.figure("figure_1", figsize=(6, 4), facecolor="white")
+
+window = fig_temp.canvas.window()
+        
+window.findChild(QtWidgets.QToolBar).setVisible(False)
+window.statusBar().setVisible(False)
+
+plt.rcParams.update({'font.size': 6})
 
 #--------------------------------------------------------------------------------------
 ax_1 = fig_temp.add_subplot(411)

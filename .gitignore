@@ -127,3 +127,45 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.project
+.pydevproject
+
+.settings/
+
+
+
+
+
+*.hdf5
+*.dat
+
+*.eps
+*.pdf
+
+*.png
+*.jpg
+*.jpeg
+*.tga
+
+*.mp4
+
+*.m
+
+
+
+src/asymptote/**/*.txt
+src/resources/**/*.txt
+
+#src/2d/asymptote/**/*.txt
+# src/3d/asymptote/**/*.txt
+
+
+data_blender
+data_hdf5
+frames
+
+
+
+
+

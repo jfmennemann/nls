@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+from PyQt5 import QtWidgets 
+
 
 from scipy.sparse import spdiags, eye
 
@@ -68,7 +70,7 @@ x0 = 0.0
 
 sigma_0 = 1.0
 
-k0 = 2
+k0 = 8
 
 
 u_ref = gaussian(x, 0.0, x0, sigma_0, k0)
@@ -106,7 +108,14 @@ print(times_analysis[-1])
 plt.ion()
 
 #======================================================================================
-fig_temp = plt.figure("figure_1", figsize=(8, 8), facecolor="white")
+fig_temp = plt.figure("figure_1", figsize=(6, 4), facecolor="white")
+
+window = fig_temp.canvas.window()
+        
+window.findChild(QtWidgets.QToolBar).setVisible(False)
+window.statusBar().setVisible(False)
+
+plt.rcParams.update({'font.size': 6})
 
 #--------------------------------------------------------------------------------------
 ax_1 = fig_temp.add_subplot(411)
