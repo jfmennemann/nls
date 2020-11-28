@@ -86,9 +86,11 @@ class Figure1(object):
         
         #==========================================================================================
         self.line_u_abs_squared,     = ax_00.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='k',         label='u')
-        self.line_u_ref_abs_squared, = ax_00.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+        self.line_u_ref_abs_squared, = ax_00.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='--', color='tab:green', label='u_ref')
         
-        ax_00.set_ylim(-0.1, 1.1)
+        self.line_V,                 = ax_00.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='red', label='V')
+        
+        ax_00.set_ylim(-0.1, 1.5)
         
         ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle='-', linewidth=0.5)
         ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)
@@ -96,14 +98,14 @@ class Figure1(object):
         ax_00.set_xlabel('x')
         ax_00.set_ylabel('|u|^2')
         
-        ax_00.legend(loc='upper right', fancybox=False, ncol=2)
+        ax_00.legend(loc='upper right', fancybox=False, ncol=3)
         #==========================================================================================
         
         #==========================================================================================
         self.line_u_real,     = ax_10.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='k', label='u')
-        self.line_u_ref_real, = ax_10.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+        self.line_u_ref_real, = ax_10.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='--', color='tab:green', label='u_ref')
         
-        ax_10.set_ylim(-1.1, 1.1)
+        ax_10.set_ylim(-1.5, 1.5)
         
         ax_10.grid(b=True, which='major', color=color_gridlines_major, linestyle='-', linewidth=0.5)
         ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)
@@ -116,9 +118,9 @@ class Figure1(object):
         
         #==========================================================================================
         self.line_u_imag,     = ax_20.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='k', label='u')
-        self.line_u_ref_imag, = ax_20.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='-', color='tab:green', label='u_ref')
+        self.line_u_ref_imag, = ax_20.plot(x, np.zeros_like(x), linewidth=1.0, linestyle='--', color='tab:green', label='u_ref')
         
-        ax_20.set_ylim(-1.1, 1.1)
+        ax_20.set_ylim(-1.5, 1.5)
         
         ax_20.grid(b=True, which='major', color=color_gridlines_major, linestyle='-', linewidth=0.5)
         ax_20.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)
@@ -164,6 +166,11 @@ class Figure1(object):
         
         self.line_u_imag.set_ydata(np.real(u_complete))
         self.line_u_ref_imag.set_ydata(np.real(u_ref))
+    
+    
+    def update_V(self, V):
+        
+        self.line_V.set_ydata(V)
         
     
     def update_rel_error(self, rel_error_of_times_analysis, times_analysis, nr_times_analysis):
