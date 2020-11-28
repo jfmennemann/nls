@@ -49,8 +49,8 @@ class Figure1(object):
         
         if resolution == '2560x1440':
             
-            n_pixels_x = 1200
-            n_pixels_y = 800
+            n_pixels_x = 1000
+            n_pixels_y = 1000
             
             pos_x = 2560 - n_pixels_x
             pos_y = 0
@@ -73,7 +73,7 @@ class Figure1(object):
         
         
         
-        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=4, left=0.055, bottom=0.065, right=0.985, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1, 1])
+        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=4, left=0.1, bottom=0.065, right=0.985, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1, 2])
         
         
         
@@ -130,10 +130,12 @@ class Figure1(object):
         #==========================================================================================
         
         #==========================================================================================
-        self.line_rel_error, = ax_30.plot([], [], linewidth=1.0, linestyle='-', color='k')
+        # self.line_rel_error, = ax_30.plot([], [], linewidth=1.0, linestyle='-', color='k')
+        self.line_rel_error, = ax_30.semilogy([], [], linewidth=1.0, linestyle='-', color='k')
         
         ax_30.set_xlim(0, T)
-        ax_30.set_ylim(-0.1, 2.1)
+        # ax_30.set_ylim(-0.1, 2.1)
+        ax_30.set_ylim(1e-4, 1e1)
         
         ax_30.grid(b=True, which='major', color=color_gridlines_major, linestyle='-', linewidth=0.5)
         ax_30.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)

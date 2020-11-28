@@ -18,7 +18,7 @@ dx = x[1] - x[0]
 
 
 
-T = 10
+T = 5
 
 dt = 0.001
 
@@ -53,7 +53,7 @@ def gaussian(x, t, x0, sigma_0, k0):
 
 
 
-x0 = 0.0
+x0 = -4.0
 
 sigma_0 = 1.0
 
