@@ -1,8 +1,15 @@
 from scipy.sparse import diags, eye
 
+from scipy.sparse.linalg import spsolve
+
 import numpy as np
 
-from free_schroedinger.figure_1 import Figure1
+np.set_printoptions(edgeitems=8, linewidth=200, precision=8)
+
+
+
+from linear_schroedinger.free_time_evolution.figure_1 import Figure1
+
 
 
 
@@ -13,7 +20,6 @@ def gaussian(x, t, x0, sigma_0, k0):
     alpha = 1.0 + 1j * t / tau
     
     return (1.0/np.sqrt(alpha)) * np.exp( (1.0/alpha) * ( -((x-x0)/(2*sigma_0))**2 + 1j * k0 * (x-x0) - 1j * sigma_0**2 * k0**2 * t/ tau) )
-
 
 
 
@@ -45,14 +51,12 @@ n_times = np.int(np.round(T / dt)) + 1
 times = np.linspace(0, T, n_times, endpoint=True)
 
 
-D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx, Jx))
+D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
 
-# print(D_xx.toarray())
+print(D_xx.toarray())
 
-D_xx = D_xx.tolil()
+input('press any key ...')
 
-D_xx[0,-1] = 1
-D_xx[-1,0] = 1
 
 D_xx = D_xx / dx**2
 
@@ -136,7 +140,7 @@ for n in np.arange(times.size):
         
         nr_times_analysis = nr_times_analysis + 1
     
-    u = u + 0.5 * dt * 1j * D_xx * u
+    u = spsolve(A, u)
     
     
 

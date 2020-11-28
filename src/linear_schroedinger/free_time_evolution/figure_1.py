@@ -135,7 +135,7 @@ class Figure1(object):
         
         ax_30.set_xlim(0, T)
         # ax_30.set_ylim(-0.1, 2.1)
-        ax_30.set_ylim(1e-4, 1e1)
+        ax_30.set_ylim(1e-6, 1e1)
         
         ax_30.grid(b=True, which='major', color=color_gridlines_major, linestyle='-', linewidth=0.5)
         ax_30.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)
