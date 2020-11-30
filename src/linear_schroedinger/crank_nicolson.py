@@ -10,7 +10,7 @@ from numpy import array
 from numpy import pi
 from numpy import exp
 
-from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
+from linear_schroedinger.figure_1 import Figure1
 
 
 
@@ -24,6 +24,8 @@ order_spatial_discretization = 8
 
 
 
+
+
 x0 = 1
 
 omega = 5
@@ -33,8 +35,11 @@ omega = 5
 
 
 
-x_min = -4
-x_max = +4
+
+
+
+x_min = -5
+x_max = +5
 
 Jx = 200
 
@@ -44,13 +49,18 @@ dx = x[1] - x[0]
 
 
 
-T = 100
+T = 10
 
 dt = 0.001
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
+
+
+
+
+
 
 
 
@@ -101,6 +111,8 @@ B = E  +  0.25 * dt * 1j * D_xx  -  0.5 * dt * 1j * diag_V
 
 
 
+
+
 u_ref = coherent_state(x, 0.0, x0, omega)
 
 
@@ -122,8 +134,6 @@ n_mod_times_analysis = 25
 times_analysis = times[::n_mod_times_analysis]
 
 
-
-norm_u_of_times_analysis = np.zeros_like(times_analysis)
 rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 
@@ -148,34 +158,22 @@ for n in np.arange(times.size):
         
         t = times[n]
         
-        """
         print('n: {0:d}'.format(n))
         print('t: {0:1.2f}'.format(t))
         print()
-        """
         
+        # u_ref = gaussian(x, t, x0, sigma_0, k0)
         u_ref = coherent_state(x, t, x0, omega)
+
         
-        u_complete[1:-1] = u
-        
-        
-        
-        norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
-        
-        defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
-        
-        print(defect_of_mass_of_times_analysis[nr_times_analysis])
+        u_complete[1:-1] = u[:]
         
         rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
-        
         times_analysis[nr_times_analysis] = t 
         
         
         fig_1.update_u(u_complete, u_ref)
-        
         fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
-        
-        fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
         
         fig_1.redraw()
         
