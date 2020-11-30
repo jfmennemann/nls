@@ -4,23 +4,11 @@ from scipy.sparse.linalg import spsolve
 
 import numpy as np
 
-np.set_printoptions(edgeitems=8, linewidth=200, precision=8)
+np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
+from linear_schroedinger.wave_packet.wave_packets import gaussian
 
-
-from linear_schroedinger.free_time_evolution.figure_1 import Figure1
-
-
-
-
-def gaussian(x, t, x0, sigma_0, k0):
-    
-    tau = 2 * sigma_0**2
-    
-    alpha = 1.0 + 1j * t / tau
-    
-    return (1.0/np.sqrt(alpha)) * np.exp( (1.0/alpha) * ( -((x-x0)/(2*sigma_0))**2 + 1j * k0 * (x-x0) - 1j * sigma_0**2 * k0**2 * t/ tau) )
-
+from linear_schroedinger.wave_packet.figure_1 import Figure1
 
 
 x0 = -2.5
@@ -51,17 +39,14 @@ n_times = np.int(np.round(T / dt)) + 1
 times = np.linspace(0, T, n_times, endpoint=True)
 
 
-D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
+D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx-1, Jx-1))
 
-print(D_xx.toarray())
-
-input('press any key ...')
+# print(D_xx.toarray())
 
 
 D_xx = D_xx / dx**2
 
-
-E = eye(Jx)
+E = eye(Jx-1)
 
 
 A = E - 0.5 * 1j * dt * D_xx
@@ -72,28 +57,22 @@ A = E - 0.5 * 1j * dt * D_xx
 
 
 
-
-
-
-
-
 u_ref = gaussian(x, 0.0, x0, sigma_0, k0)
 
-u = u_ref[0:-1]
+u = u_ref[1:-1]
 
-assert(u.size == Jx)
+assert(u.size == Jx-1)
 
 
 u_complete = np.zeros_like(u_ref)
 
-u_complete[0:-1] = u
-
-u_complete[-1] = u_complete[0]
+u_complete[1:-1] = u[:]
 
 
 
 
-n_mod_times_analysis = 50
+
+n_mod_times_analysis = 25
 
 times_analysis = times[::n_mod_times_analysis]
 
@@ -125,8 +104,7 @@ for n in np.arange(times.size):
         
         u_ref = gaussian(x, t, x0, sigma_0, k0)
     
-        u_complete[0:-1] = u
-        u_complete[-1] = u_complete[0]
+        u_complete[1:-1] = u[:]
         
         rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
         times_analysis[nr_times_analysis] = t 
@@ -141,7 +119,6 @@ for n in np.arange(times.size):
         nr_times_analysis = nr_times_analysis + 1
     
     u = spsolve(A, u)
-    
     
 
 input('press any key ...')

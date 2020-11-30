@@ -102,7 +102,7 @@ u = u_ref
 
 
 
-n_mod_times_analysis = 25
+n_mod_times_analysis = 50
 
 times_analysis = times[::n_mod_times_analysis]
 

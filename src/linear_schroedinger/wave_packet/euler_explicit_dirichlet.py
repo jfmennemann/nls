@@ -2,17 +2,11 @@ from scipy.sparse import diags, eye
 
 import numpy as np
 
-from linear_schroedinger.free_time_evolution.figure_1 import Figure1
+np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
+from linear_schroedinger.wave_packet.wave_packets import gaussian
 
-
-def gaussian(x, t, x0, sigma_0, k0):
-    
-    tau = 2 * sigma_0**2
-    
-    alpha = 1.0 + 1j * t / tau
-    
-    return (1.0/np.sqrt(alpha)) * np.exp( (1.0/alpha) * ( -((x-x0)/(2*sigma_0))**2 + 1j * k0 * (x-x0) - 1j * sigma_0**2 * k0**2 * t/ tau) )
+from linear_schroedinger.wave_packet.figure_1 import Figure1
 
 
 

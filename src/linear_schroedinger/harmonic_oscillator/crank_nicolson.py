@@ -20,7 +20,7 @@ def coherent_state(x, t, x0, omega):
 
 
 
-order_spatial_discretization = 8
+order_spatial_discretization = 2
 
 
 
@@ -110,7 +110,7 @@ u = u_ref
 
 
 
-n_mod_times_analysis = 25
+n_mod_times_analysis = 50
 
 times_analysis = times[::n_mod_times_analysis]
 

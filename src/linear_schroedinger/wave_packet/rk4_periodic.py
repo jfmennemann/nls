@@ -2,17 +2,12 @@ from scipy.sparse import diags
 
 import numpy as np
 
-from linear_schroedinger.free_time_evolution.figure_1 import Figure1
+np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
+from linear_schroedinger.wave_packet.wave_packets import gaussian
 
+from linear_schroedinger.wave_packet.figure_1 import Figure1
 
-def gaussian(x, t, x0, sigma_0, k0):
-    
-    tau = 2 * sigma_0**2
-    
-    alpha = 1.0 + 1j * t / tau
-    
-    return (1.0/np.sqrt(alpha)) * np.exp( (1.0/alpha) * ( -((x-x0)/(2*sigma_0))**2 + 1j * k0 * (x-x0) - 1j * sigma_0**2 * k0**2 * t/ tau) )
 
 
 
@@ -41,10 +36,22 @@ dx = x[1] - x[0]
 
 T = 5
 
-# dt = 0.001
-
-dt = 0.015
+# 2nd order
 # dt = 0.014
+dt = 0.015
+
+# 4th order
+# dt = 0.010
+# dt = 0.011
+
+# 6th order
+# dt = 0.009
+# dt = 0.010
+
+
+# 8th order
+# dt = 0.008
+# dt = 0.009
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -56,40 +63,63 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 if order_spatial_discretization == 2:
+     
+    D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
+
+    print(D_xx.toarray())
     
-    D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx, Jx))
+    input('press any key ...')
     
     D_xx = D_xx / dx**2
     
-    a = 0.5
-    
 if order_spatial_discretization == 4:
     
-    D_xx = diags([-1, 16, -30, 16, -1], [-2, -1, 0, 1, 2], shape=(Jx, Jx))
+    D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
+    
+    print(D_xx.toarray())
+    
+    input('press any key ...')
 
     D_xx = D_xx / (12 * dx**2)
     
 if order_spatial_discretization == 6:
     
-    D_xx = diags([2, -27, 270, -490, 270, -27, 2], [-3, -2, -1, 0, 1, 2, 3], shape=(Jx, Jx))
+    D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
+    
+    print(D_xx.toarray())
+    
+    input('press any key ...')
     
     D_xx = D_xx / (180 * dx**2)
     
 if order_spatial_discretization == 8:
     
-    D_xx = diags([-9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9], [-4, -3, -2, -1, 0, 1, 2, 3, 4], shape=(Jx, Jx))
+    D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
+    
+    print(D_xx.toarray())
+    
+    input('press any key ...')
     
     D_xx = D_xx / (5040 * dx**2)
 
 
 A = 1j * 0.5 * D_xx
 
+a = 0.5
 
-dt_upper_bound = (np.sqrt(8) / 4) * dx**2 / a
+if order_spatial_discretization == 2:
 
-print(dt_upper_bound)
-input('press any key ...')
+    dt_upper_bound_2nd_order = (np.sqrt(8) / 4) * dx**2 / a
+    
+    print(dt_upper_bound_2nd_order)
+    input('press any key ...')
+    
+if order_spatial_discretization == 4:
+    
+    dt_upper_bound_4th_order = (3/4) * (np.sqrt(8)/4) * dx**2 / a
 
+    print(dt_upper_bound_4th_order)
+    input('press any key ...')
 
 
 u_ref = gaussian(x, 0.0, x0, sigma_0, k0)
@@ -115,7 +145,7 @@ u_complete[-1] = u_complete[0]
 
 
 
-n_mod_times_analysis = 1
+n_mod_times_analysis = 2
 
 times_analysis = times[::n_mod_times_analysis]
 
