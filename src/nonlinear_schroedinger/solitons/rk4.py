@@ -21,6 +21,7 @@ beta = -1
 
 
 
+
 x_min = -8
 x_max = +8
 
