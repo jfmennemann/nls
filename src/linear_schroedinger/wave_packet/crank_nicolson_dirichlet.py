@@ -26,7 +26,7 @@ k0 = 4
 x_min = -10
 x_max = +10
 
-Jx = 100
+Jx = 200
 
 x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
