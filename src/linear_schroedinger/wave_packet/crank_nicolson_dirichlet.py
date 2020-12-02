@@ -12,7 +12,7 @@ from linear_schroedinger.wave_packet.figure_1 import Figure1
 
 
 
-order_spatial_discretization = 2
+order_spatial_discretization = 4
 
 
 x0 = -2.5
