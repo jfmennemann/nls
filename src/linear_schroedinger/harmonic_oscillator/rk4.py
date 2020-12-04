@@ -42,7 +42,7 @@ dx = x[1] - x[0]
 
 T = 100
 
-dt = 0.001
+dt = 0.00125
 
 n_times = np.int(np.round(T / dt)) + 1
         

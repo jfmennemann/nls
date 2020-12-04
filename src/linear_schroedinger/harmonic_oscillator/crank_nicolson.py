@@ -14,19 +14,12 @@ from linear_schroedinger.harmonic_oscillator.reference_solutions import coherent
 from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
 
 
-
-
-
 order_spatial_discretization = 2
-
 
 
 x0 = 1
 
 omega = 5
-
-
-
 
 
 
