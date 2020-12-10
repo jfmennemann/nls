@@ -37,8 +37,8 @@ dx = x[1] - x[0]
 T = 5
 
 # 2nd order
-dt = 0.014
-# dt = 0.015
+# dt = 0.014
+dt = 0.015
 
 # 4th order
 # dt = 0.010
@@ -66,9 +66,9 @@ if order_spatial_discretization == 2:
      
     D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
 
-    print(D_xx.toarray())
+    # print(D_xx.toarray())
     
-    input('press any key ...')
+    # input('press any key ...')
     
     D_xx = D_xx / dx**2
     
