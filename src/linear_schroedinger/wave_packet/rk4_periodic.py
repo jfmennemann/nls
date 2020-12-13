@@ -15,6 +15,7 @@ from linear_schroedinger.wave_packet.figure_1 import Figure1
 order_spatial_discretization = 8
 
 
+
 x0 = 0
 
 sigma_0 = 0.25
@@ -38,13 +39,46 @@ dx = x[1] - x[0]
 
 T = 2
 
-# 2nd order
-# dt = 0.014
-# dt = 0.015
 
-# 4th order
-# dt = 0.010
-# dt = 0.011
+
+
+if order_spatial_discretization == 2:
+
+    # dt_upper_bound_2nd_order = np.sqrt(2) * dx**2
+    dt_upper_bound_2nd_order = 1.414 * dx**2
+    
+    # dt = dt_upper_bound_2nd_order
+    
+    dt = 1.1 * dt_upper_bound_2nd_order
+    
+    
+if order_spatial_discretization == 4:
+    
+    # dt_upper_bound_4th_order = (3/4) * np.sqrt(2) * dx**2
+    dt_upper_bound_4th_order = 1.060 * dx**2
+
+    dt = dt_upper_bound_4th_order
+    # dt = 1.1 * dt_upper_bound_4th_order
+
+ 
+if order_spatial_discretization == 6:
+    
+    dt_upper_bound_6th_order = 0.9350 * dx**2
+
+    dt = dt_upper_bound_6th_order
+    # dt = 1.1 * dt_upper_bound_6th_order
+    
+    
+if order_spatial_discretization == 8:
+    
+    dt_upper_bound_8th_order = 0.87007 * dx**2
+    
+    dt = dt_upper_bound_8th_order
+    # dt = 1.05 * dt_upper_bound_8th_order
+
+    # dt = 0.1 * dt
+    dt = 0.01 * dt
+
 
 # 6th order
 # dt = 0.009
@@ -52,7 +86,7 @@ T = 2
 
 
 # 8th order
-dt = 0.001
+# dt = 0.001
 # dt = 0.009
 
 n_times = np.int(np.round(T / dt)) + 1
@@ -107,21 +141,7 @@ if order_spatial_discretization == 8:
 
 A = 1j * 0.5 * D_xx
 
-a = 0.5
 
-if order_spatial_discretization == 2:
-
-    dt_upper_bound_2nd_order = (np.sqrt(8) / 4) * dx**2 / a
-    
-    print(dt_upper_bound_2nd_order)
-    # input('press any key ...')
-    
-if order_spatial_discretization == 4:
-    
-    dt_upper_bound_4th_order = (3/4) * (np.sqrt(8)/4) * dx**2 / a
-
-    print(dt_upper_bound_4th_order)
-    # input('press any key ...')
 
 
 u_ref = gaussian(x, 0.0, x0, sigma_0, k0)
