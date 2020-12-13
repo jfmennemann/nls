@@ -22,8 +22,8 @@ beta = -1
 
 
 
-x_min = -8
-x_max = +8
+x_min = -4
+x_max = +4
 
 L = x_max - x_min
 
@@ -125,6 +125,10 @@ for n in np.arange(times.size):
     if n % n_mod_times_analysis == 0:
         
         t = times[n]
+        
+        print('n: {0:d}'.format(n))
+        print('t: {0:1.2f}'.format(t))
+        print()
         
         u_ref = bright_soliton(x, t, a, v, x0, theta_0, beta) + bright_soliton(x+L, t, a, v, x0, theta_0, beta) + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
         

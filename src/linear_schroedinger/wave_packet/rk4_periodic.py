@@ -12,19 +12,21 @@ from linear_schroedinger.wave_packet.figure_1 import Figure1
 
 
 
-order_spatial_discretization = 2
+order_spatial_discretization = 8
 
 
-x0 = -2.5
+x0 = 0
 
-sigma_0 = 0.5
+sigma_0 = 0.25
 
-k0 = 4
+k0 = 20
 
 
 
-x_min = -10
-x_max = +10
+x_min = -4
+x_max = +4
+
+L = x_max - x_min
 
 Jx = 200
 
@@ -34,11 +36,11 @@ dx = x[1] - x[0]
 
 
 
-T = 5
+T = 2
 
 # 2nd order
 # dt = 0.014
-dt = 0.015
+# dt = 0.015
 
 # 4th order
 # dt = 0.010
@@ -50,7 +52,7 @@ dt = 0.015
 
 
 # 8th order
-# dt = 0.008
+dt = 0.001
 # dt = 0.009
 
 n_times = np.int(np.round(T / dt)) + 1
@@ -76,9 +78,9 @@ if order_spatial_discretization == 4:
     
     D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
     
-    print(D_xx.toarray())
+    # print(D_xx.toarray())
     
-    input('press any key ...')
+    # input('press any key ...')
 
     D_xx = D_xx / (12 * dx**2)
     
@@ -86,9 +88,9 @@ if order_spatial_discretization == 6:
     
     D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
     
-    print(D_xx.toarray())
+    # print(D_xx.toarray())
     
-    input('press any key ...')
+    # input('press any key ...')
     
     D_xx = D_xx / (180 * dx**2)
     
@@ -96,9 +98,9 @@ if order_spatial_discretization == 8:
     
     D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
     
-    print(D_xx.toarray())
+    # print(D_xx.toarray())
     
-    input('press any key ...')
+    # input('press any key ...')
     
     D_xx = D_xx / (5040 * dx**2)
 
@@ -112,14 +114,14 @@ if order_spatial_discretization == 2:
     dt_upper_bound_2nd_order = (np.sqrt(8) / 4) * dx**2 / a
     
     print(dt_upper_bound_2nd_order)
-    input('press any key ...')
+    # input('press any key ...')
     
 if order_spatial_discretization == 4:
     
     dt_upper_bound_4th_order = (3/4) * (np.sqrt(8)/4) * dx**2 / a
 
     print(dt_upper_bound_4th_order)
-    input('press any key ...')
+    # input('press any key ...')
 
 
 u_ref = gaussian(x, 0.0, x0, sigma_0, k0)
@@ -145,7 +147,7 @@ u_complete[-1] = u_complete[0]
 
 
 
-n_mod_times_analysis = 2
+n_mod_times_analysis = 10
 
 times_analysis = times[::n_mod_times_analysis]
 
@@ -175,13 +177,35 @@ for n in np.arange(times.size):
         
         t = times[n]
         
-        """
+        
         print('n: {0:d}'.format(n))
         print('t: {0:1.2f}'.format(t))
         print()
-        """
         
-        u_ref = gaussian(x, t, x0, sigma_0, k0)
+        
+        u_ref = (
+                + gaussian(x - 10*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  9*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  8*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  7*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  6*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  5*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  4*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  3*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  2*L, t, x0, sigma_0, k0) 
+                + gaussian(x -  1*L, t, x0, sigma_0, k0)
+                + gaussian(x +  0*L, t, x0, sigma_0, k0)
+                + gaussian(x +  1*L, t, x0, sigma_0, k0)
+                + gaussian(x +  2*L, t, x0, sigma_0, k0)
+                + gaussian(x +  3*L, t, x0, sigma_0, k0)
+                + gaussian(x +  4*L, t, x0, sigma_0, k0)
+                + gaussian(x +  5*L, t, x0, sigma_0, k0)
+                + gaussian(x +  6*L, t, x0, sigma_0, k0)
+                + gaussian(x +  7*L, t, x0, sigma_0, k0)
+                + gaussian(x +  8*L, t, x0, sigma_0, k0)
+                + gaussian(x +  9*L, t, x0, sigma_0, k0)
+                + gaussian(x + 10*L, t, x0, sigma_0, k0)
+                )
         
         u_complete[0:-1] = u
         u_complete[-1] = u_complete[0]
