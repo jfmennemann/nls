@@ -20,7 +20,7 @@ x0 = 0
 
 sigma_0 = 0.25
 
-k0 = 20
+k0 = 10
 
 
 
@@ -37,7 +37,7 @@ dx = x[1] - x[0]
 
 
 
-T = 2
+
 
 
 
@@ -47,9 +47,7 @@ if order_spatial_discretization == 2:
     # dt_upper_bound_2nd_order = np.sqrt(2) * dx**2
     dt_upper_bound_2nd_order = 1.414 * dx**2
     
-    # dt = dt_upper_bound_2nd_order
-    
-    dt = 1.1 * dt_upper_bound_2nd_order
+    dt = 1.0 * dt_upper_bound_2nd_order
     
     
 if order_spatial_discretization == 4:
@@ -57,37 +55,26 @@ if order_spatial_discretization == 4:
     # dt_upper_bound_4th_order = (3/4) * np.sqrt(2) * dx**2
     dt_upper_bound_4th_order = 1.060 * dx**2
 
-    dt = dt_upper_bound_4th_order
-    # dt = 1.1 * dt_upper_bound_4th_order
-
- 
+    dt = 1.0 * dt_upper_bound_4th_order
+    
+    
 if order_spatial_discretization == 6:
     
     dt_upper_bound_6th_order = 0.9350 * dx**2
 
-    dt = dt_upper_bound_6th_order
-    # dt = 1.1 * dt_upper_bound_6th_order
+    dt = 1.0 * dt_upper_bound_6th_order
     
-    
+      
 if order_spatial_discretization == 8:
     
     dt_upper_bound_8th_order = 0.87007 * dx**2
     
-    dt = dt_upper_bound_8th_order
-    # dt = 1.05 * dt_upper_bound_8th_order
-
-    # dt = 0.1 * dt
-    dt = 0.01 * dt
+    dt = 1.0 * dt_upper_bound_8th_order
+    
 
 
-# 6th order
-# dt = 0.009
-# dt = 0.010
 
-
-# 8th order
-# dt = 0.001
-# dt = 0.009
+T = 2
 
 n_times = np.int(np.round(T / dt)) + 1
         
