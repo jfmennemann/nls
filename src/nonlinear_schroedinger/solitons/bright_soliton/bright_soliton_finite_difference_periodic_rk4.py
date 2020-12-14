@@ -4,9 +4,9 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from nonlinear_schroedinger.solitons.reference_solutions import bright_soliton
+from nonlinear_schroedinger.solitons.bright_soliton.reference_solutions import bright_soliton
 
-from nonlinear_schroedinger.solitons.figure_1 import Figure1
+from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
 
 
 
@@ -83,7 +83,7 @@ max_abs_lambda = np.max(np.abs(eigenvalues_A_linear_part))
 
 
 
-dt = 1.0 * np.sqrt(8) / max_abs_lambda
+dt = 1.01 * np.sqrt(8) / max_abs_lambda
 
 print(dt)
 
@@ -174,6 +174,9 @@ for n in np.arange(times.size):
         
         
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
+        
+        
+        print(norm_u_of_times_analysis[nr_times_analysis] / norm_u_of_times_analysis[0])
         
         defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
         

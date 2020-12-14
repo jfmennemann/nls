@@ -4,9 +4,9 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from nonlinear_schroedinger.solitons.reference_solutions import dark_soliton
+from nonlinear_schroedinger.solitons.dark_soliton.reference_solutions import dark_soliton
 
-from nonlinear_schroedinger.solitons.figure_1 import Figure1
+from nonlinear_schroedinger.solitons.dark_soliton.figure_1 import Figure1
 
 
 
