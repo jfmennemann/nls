@@ -24,9 +24,8 @@ if export_pdf == True:
     "pgf.preamble": "\n".join([           # load additional packages
         "\\usepackage{amsmath}",
         "\\usepackage{bbm}",                    
-        ]
-    )
-})
+        ])
+    })
     
     
 color_gridlines_major = '#666666'

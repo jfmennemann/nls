@@ -155,7 +155,7 @@ class Figure1(object):
         ax_30.grid(b=True, which='minor', color=color_gridlines_minor, linestyle='-', linewidth=0.5)
         
         ax_30.set_xlabel('t')
-        ax_30.set_ylabel('defect of mass')
+        ax_30.set_ylabel('mass deviation')
         #==========================================================================================
         
         #==========================================================================================

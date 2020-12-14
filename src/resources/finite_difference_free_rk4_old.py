@@ -1,17 +1,17 @@
-from scipy.sparse import diags
-
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
+
+from scipy.sparse import diags
+
+from scipy.sparse import csr_matrix
+
+
+
 from nonlinear_schroedinger.solitons.dark_soliton.reference_solutions import dark_soliton
 
 from nonlinear_schroedinger.solitons.dark_soliton.figure_1 import Figure1
-
-
-
-order_spatial_discretization = 8
-
 
 
 
@@ -24,9 +24,6 @@ theta_0 = 0
 u0 = 10
 beta = 2
 phi = 0.0 * np.pi
-
-
-
 
 
 
@@ -56,29 +53,26 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
-if order_spatial_discretization == 2:
-     
-    D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
+
+D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx, Jx))
+
+D_xx = D_xx.todense()
+
+D_xx[0, 0] = -1
+D_xx[0, 1] = +4
+D_xx[0, 2] = -5
+D_xx[0, 3] = +2
+
+D_xx[-1, -1] = +2
+D_xx[-1, -2] = -5
+D_xx[-1, -3] = +4
+D_xx[-1, -4] = -1
+
+D_xx = csr_matrix(D_xx)
+
+D_xx = D_xx / dx**2
     
-    D_xx = D_xx / dx**2
-    
-if order_spatial_discretization == 4:
-    
-    D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
-    
-    D_xx = D_xx / (12 * dx**2)
-    
-if order_spatial_discretization == 6:
-    
-    D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-    
-    D_xx = D_xx / (180 * dx**2)
-    
-if order_spatial_discretization == 8:
-    
-    D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-        
-    D_xx = D_xx / (5040 * dx**2)
+
 
 
 
@@ -144,7 +138,7 @@ for n in np.arange(times.size):
         u_complete[0:-1] = u
         u_complete[-1] = u_complete[0]
         
-        u_complete = 100 * np.ones_like(u_complete)
+        # u_complete = 100 * np.ones_like(u_complete)
         
         
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
