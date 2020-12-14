@@ -28,7 +28,7 @@ if export_pdf == True:
     )
 })
     
-
+    
 color_gridlines_major = '#666666'
 color_gridlines_minor = '#999999'
 
