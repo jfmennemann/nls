@@ -185,7 +185,7 @@ for n in np.arange(times.size):
     
     b =       u + 0.25 * 1j * dt * D_xx * u - 0.5 * 1j * dt * beta * u_abs_squared * u
     
-    A = eye(Jx) - 0.25 * 1j * dt * D_xx     + 0.5 * 1j * dt * beta * spdiags(u_abs_squared, np.array([0]), Jx, Jx)
+    A = eye(Jx) - 0.25 * 1j * dt * D_xx     + 0.5 * 1j * dt * beta * spdiags(u_abs_squared, 0, Jx, Jx)
     
     u = spsolve(A, b)
     
