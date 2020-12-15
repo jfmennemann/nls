@@ -23,6 +23,7 @@ omega = 5
 
 
 
+
 x_min = -4
 x_max = +4
 
