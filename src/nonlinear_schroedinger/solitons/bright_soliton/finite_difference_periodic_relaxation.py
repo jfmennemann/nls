@@ -14,6 +14,7 @@ from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
 
 
 
+
 order_spatial_discretization = 8
 
 
