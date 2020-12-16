@@ -1,6 +1,7 @@
 from scipy.sparse import diags
 from scipy.sparse import eye
 from scipy.sparse import spdiags
+from scipy.sparse import csr_matrix
 
 from scipy.sparse.linalg import spsolve
 
@@ -14,7 +15,7 @@ from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
 
 
 
-order_spatial_discretization = 8
+order_spatial_discretization = 2
 
 
 a = 4
@@ -31,7 +32,7 @@ x_max = +4
 
 L = x_max - x_min
 
-Jx = 200
+Jx = 100
 
 x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
@@ -41,8 +42,10 @@ dx = x[1] - x[0]
 
 
 if order_spatial_discretization == 2:
-     
-    D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
+    
+    D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx+1, Jx+1))
+    
+    D_xx = csr_matrix(D_xx)
     
     D_xx = D_xx / dx**2
     
@@ -67,12 +70,7 @@ if order_spatial_discretization == 8:
 
 
 
-
-
-
 dt = 0.001
-
-
 
 
 
@@ -89,24 +87,15 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
-# u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
+u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-u_ref = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, -v, +2, theta_0, beta)
+u = u_ref
 
+psi_old = np.abs(u_ref)**2
 
-u = u_ref[0:-1]
+assert(u.size == Jx+1)
+assert(psi_old.size ==Jx+1)
 
-psi_old = np.abs(u_ref[0:-1])**2
-
-assert(u.size == Jx)
-assert(psi_old.size ==Jx)
-
-
-u_complete = np.zeros_like(u_ref)
-
-u_complete[0:-1] = u
-
-u_complete[-1] = u_complete[0]
 
 
 
@@ -127,7 +116,7 @@ rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 fig_1 = Figure1(x, times, screen_size='large')
 
-fig_1.update_u(u_complete, u_ref)
+fig_1.update_u(u, u_ref)
    
 fig_1.redraw()
 
@@ -158,8 +147,7 @@ for n in np.arange(times.size):
                 + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
                 )
         
-        u_complete[0:-1] = u
-        u_complete[-1] = u_complete[0]
+        
         
         
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
@@ -171,12 +159,12 @@ for n in np.arange(times.size):
         
         
         
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
+        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
         
         times_analysis[nr_times_analysis] = t 
         
         
-        fig_1.update_u(u_complete, u_ref)
+        fig_1.update_u(u, u_ref)
         
         fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
         
@@ -192,7 +180,26 @@ for n in np.arange(times.size):
     
     b = u + 0.25 * 1j * dt * D_xx * u - 0.5 * 1j * dt * beta * psi_new * u
     
-    A = eye(Jx) - 0.25 * 1j * dt * D_xx + 0.5 * 1j * dt * beta * spdiags(psi_new, 0, Jx, Jx)
+    A = eye(Jx+1) - 0.25 * 1j * dt * D_xx + 0.5 * 1j * dt * beta * spdiags(psi_new, 0, Jx+1, Jx+1)
+    
+    
+    
+    A = A.todense()
+    
+    A[0, 0] = -1
+    A[0, 1] = +0
+    A[0, 2] = +1
+    
+    A[-1, -1] = +1
+    A[-1, -2] = +0
+    A[-1, -3] = -1
+
+    b[0] = 0
+    b[-1] = 0
+
+    A = csr_matrix(A)
+    
+    
     
     u = spsolve(A, b)
     
