@@ -1,43 +1,3 @@
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-export_pdf = True
-
-if export_pdf == True:
-
-    mpl.use("pgf")
-    
-    # Say, "the default sans-serif font is COMIC SANS"
-    # matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
-    # Then, "ALWAYS use sans-serif fonts"
-    # matplotlib.rcParams['font.family'] = "sans-serif"
-    
-    plt.rcParams.update({
-    # "font.family": "serif",             # use serif/main font for text elements
-    "font.family": "sans-serif",
-    # "font.serif": [],                   # use latex default serif font
-    "font.sans-serif": ["DejaVu Sans"],   # use a specific sans-serif font
-    "text.usetex": True,                  # use inline math for ticks
-    "pgf.rcfonts": False,                 # don't setup fonts from rc parameters
-    "axes.titlesize": 12,
-    "axes.labelsize": 12,
-    "pgf.preamble": "\n".join([           # load additional packages
-        "\\usepackage{amsmath}",
-        "\\usepackage{bbm}",                    
-        ])
-    })
-    
- 
- 
-from colors.mycolors import color_gridlines_major
-from colors.mycolors import color_gridlines_minor
-
-    
-
-color_stable = 'lightgray'
-
-
-
 import numpy as np
 
 
@@ -72,38 +32,47 @@ z_RK4            = np.abs(1 + Z + Z**2/2 + Z**3/6+ Z**4/24)
 
 
 
-width  = 8.00
-height = 5.65
+
+from style_sheet import mystyle
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+export_pdf = True
+
+if export_pdf == True:
+
+    mpl.use("pgf")
+    
+    plt.rcParams.update(mystyle.rc_parameters)
+
+
+color_stability_regions = mystyle.color_stability_regions
+
+color_gridlines_major = '#666666'
+color_gridlines_minor = '#999999'
+
+
+width  = 6.5
+height = 4.9
 
 fig = plt.figure("figure_stability_regions", figsize=(width, height), facecolor="white", constrained_layout=False)
 
 
-gridspec = fig.add_gridspec(ncols=2, nrows=2, left=0.075, right=0.95, bottom=0.1, top=0.925, wspace=0.5, hspace=0.5, width_ratios=[1, 1], height_ratios=[1, 1])
-# gridspec = fig.add_gridspec(ncols=2, nrows=2, wspace=0.5, hspace=0.5, width_ratios=[1, 1], height_ratios=[1, 1])
-
-
+gridspec = fig.add_gridspec(ncols=2, nrows=2, left=0.085, right=0.99, bottom=0.085, top=0.95, wspace=0.3, hspace=0.5, width_ratios=[1, 1], height_ratios=[1, 1])
 
 ax_explicit_Euler = fig.add_subplot(gridspec[0, 0])
 ax_implicit_Euler = fig.add_subplot(gridspec[0, 1])
 ax_Crank_Nicolson = fig.add_subplot(gridspec[1, 0])
 ax_RK4            = fig.add_subplot(gridspec[1, 1])
 
-"""
-x_min = -4
-x_max = +4
-
-y_min = -4
-y_max = +4
-"""
 
 #------------------------------------------------------------------------------
-# ax_explicit_Euler = plt.subplot(2,2,1)
-
 levels = [0, 1]
 
 ax_explicit_Euler.set_title("Explicit Euler")
 
-ax_explicit_Euler.contourf(X, Y, z_explicit_Euler, levels, colors=(color_stable,))
+ax_explicit_Euler.contourf(X, Y, z_explicit_Euler, levels, colors=(color_stability_regions,))
 
 ax_explicit_Euler.contour(X, Y, z_explicit_Euler, levels, colors=('black',), linewidths=1.0)
 
@@ -126,13 +95,11 @@ ax_explicit_Euler.set_ylabel(r'$\operatorname{Im}(z)$')
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# ax_implicit_Euler = plt.subplot(2,2,2)
-
 levels = [0, 1]
 
 ax_implicit_Euler.set_title("Implicit Euler")
 
-ax_implicit_Euler.contourf(X, Y, z_implicit_Euler, levels, colors=(color_stable ,))
+ax_implicit_Euler.contourf(X, Y, z_implicit_Euler, levels, colors=(color_stability_regions,))
 
 ax_implicit_Euler.contour(X, Y, z_implicit_Euler, levels, colors=('black',), linewidths=1.0)
 
@@ -156,13 +123,11 @@ ax_implicit_Euler.set_ylabel(r'$\operatorname{Im}(z)$')
 
 
 #------------------------------------------------------------------------------
-# ax_Crank_Nicolson = plt.subplot(2,2,3)
-
 levels = [0, 1]
 
 ax_Crank_Nicolson.set_title("Crank-Nicolson")
 
-ax_Crank_Nicolson.contourf(X, Y, z_Crank_Nicolson, levels, colors=(color_stable,))
+ax_Crank_Nicolson.contourf(X, Y, z_Crank_Nicolson, levels, colors=(color_stability_regions,))
 
 ax_Crank_Nicolson.contour(X, Y, z_Crank_Nicolson, levels, colors=('black',), linewidths=1.0)
 
@@ -185,13 +150,11 @@ ax_Crank_Nicolson.set_ylabel(r'$\operatorname{Im}(z)$')
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# ax_RK4 = plt.subplot(2,2,4)
-
 levels = [0, 1]
 
 ax_RK4.set_title("RK4")
 
-ax_RK4.contourf(X, Y, z_RK4, levels, colors=(color_stable,))
+ax_RK4.contourf(X, Y, z_RK4, levels, colors=(color_stability_regions,))
 
 ax_RK4.contour(X, Y, z_RK4, levels, colors=('black',), linewidths=1.0)
 
@@ -214,7 +177,6 @@ ax_RK4.set_ylabel(r'$\operatorname{Im}(z)$')
 #------------------------------------------------------------------------------
 
 
-# plt.tight_layout(0.5)
 
 
 if export_pdf == True:
@@ -231,20 +193,5 @@ else:
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#==================================================================================================
-
-#==================================================================================================
-
-
 
 

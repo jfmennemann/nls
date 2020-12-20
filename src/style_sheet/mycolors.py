@@ -1,6 +1,4 @@
-color_gridlines_major = '#666666'
-color_gridlines_minor = '#999999'
-
+black = '#000000'
 
 # flat_ui_palette_v1
 

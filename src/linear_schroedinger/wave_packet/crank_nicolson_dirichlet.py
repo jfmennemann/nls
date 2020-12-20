@@ -201,6 +201,12 @@ for n in np.arange(times.size):
 
 
 
+print()
+print(t_0)
+print(t_1)
+print(t_2)
+print(t_3)
+print()
 
 
 
@@ -209,7 +215,8 @@ for n in np.arange(times.size):
 
 
 
-from colors import mycolors
+
+from style_sheet import mystyle
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -220,58 +227,30 @@ if export_pdf == True:
 
     mpl.use("pgf")
     
-    plt.rcParams.update({
-        "text.usetex": True,
-        "pgf.rcfonts": False,
-        #
-        "axes.titlesize": 12,
-        "axes.labelsize": 12,
-        "axes.linewidth": 0.85,
-        "axes.labelpad": 4,
-        #
-        "xtick.bottom": False,
-        "ytick.left": False,
-        "xtick.major.pad": 2,
-        "ytick.major.pad": 2,
-        #
-        "legend.frameon": True,
-        "legend.framealpha": 1.0,
-        "legend.edgecolor": mycolors.wet_asphalt,
-        "legend.fontsize": 12,
-        "legend.fancybox": False,
-        "legend.shadow": True,
-        "legend.handlelength": 3.0,
-        # 
-        "pgf.preamble": "\n".join([
-            "\\usepackage{amsmath}",
-            "\\usepackage{bbm}",                    
-            ])
-    })
+    plt.rcParams.update(mystyle.rc_parameters)
     
 
 
+linestyle_u_ref = mystyle.linestyle_u_ref
+linestyle_u     = mystyle.linestyle_u
 
+linewidth_u_ref = mystyle.linewidth_u_ref
+linewidth_u     = mystyle.linewidth_u
 
-linestyle_u_ref = '-'
-linestyle_u = '--'
+color_u_ref = mystyle.color_u_ref
+color_u     = mystyle.color_u
 
-linewidth_u_ref = 1.4
-linewidth_u     = 1.4
+label_u_ref = r'$u_\mathrm{ref}$'
+label_u     = r'$u$'
 
-color_u_ref = mycolors.peter_river
-color_u     = mycolors.wet_asphalt
+color_gridlines_major = mystyle.color_gridlines_major
+color_gridlines_minor = mystyle.color_gridlines_minor
 
-label_u_ref = '$u_\mathrm{ref}$'
-label_u     = '$u$'
+linestyle_gridlines_major = mystyle.linestyle_gridlines_major
+linestyle_gridlines_minor = mystyle.linestyle_gridlines_minor
 
-from colors.mycolors import color_gridlines_major
-from colors.mycolors import color_gridlines_minor
-
-linestyle_gridlines_major = '-'
-linestyle_gridlines_minor = '-'
-
-linewidth_gridlines_major = 0.50
-linewidth_gridlines_minor = 0.25
+linewidth_gridlines_major = mystyle.linewidth_gridlines_major
+linewidth_gridlines_minor = mystyle.linewidth_gridlines_minor
 
 x_ticks_major = np.array([-8, -4, 0, 4, 8])
 x_ticks_minor = np.array([-7, -6, -5, -3, -2, -1, 1, 2, 3, 5, 6, 7])
@@ -279,34 +258,32 @@ x_ticks_minor = np.array([-7, -6, -5, -3, -2, -1, 1, 2, 3, 5, 6, 7])
 y_ticks_major = np.array([0, 0.5, 1.0])
 y_ticks_minor = np.array([0.25, 0.75])
 
+x_min = -8.5
+x_max = +8.5
+
 y_min = -0.2
 y_max = +1.2
 
 
-xlabel = '$x$'
+xlabel = r'$x$'
 
-ylabel_00 = '$|u(x,t_0)|^2$'
-ylabel_10 = '$|u(x,t_1)|^2$'
-ylabel_20 = '$|u(x,t_2)|^2$'
-ylabel_30 = '$|u(x,t_3)|^2$'
-
-
+ylabel_00 = r'$|u(x,t_0)|^2$'
+ylabel_10 = r'$|u(x,t_1)|^2$'
+ylabel_20 = r'$|u(x,t_2)|^2$'
+ylabel_30 = r'$|u(x,t_3)|^2$'
 
 
 
-width  = 8.0
+width  = 6.5
 height = 6.5
-
-scaling = 0.9
-
-height = scaling * height
-width  = scaling * width
 
 fig = plt.figure("figure_wave_packet_dirichlet", figsize=(width, height), facecolor="white", constrained_layout=False)
 
+spacing_x = 0.0
+spacing_y = 0.065
 
-# gridspec = fig.add_gridspec(ncols=1, nrows=4, left=0.075, right=0.95, bottom=0.1, top=0.925, wspace=0.5, hspace=0.1, width_ratios=[1], height_ratios=[1, 1, 1, 1])
-gridspec = fig.add_gridspec(ncols=1, nrows=4, width_ratios=[1], height_ratios=[1, 1, 1, 1])
+gridspec = fig.add_gridspec(ncols=1, nrows=4, left=0.085, right=0.99, bottom=0.06, top=0.99, wspace=spacing_x, hspace=spacing_y, width_ratios=[1], height_ratios=[1, 1, 1, 1])
+
 
 
 #==========================================================================================
@@ -320,6 +297,7 @@ ax_30 = fig.add_subplot(gridspec[3, 0])
 ax_00.plot(x, np.abs(u_ref_0)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
 ax_00.plot(x, np.abs(u_0)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
+ax_00.set_xlim(x_min, x_max)
 ax_00.set_ylim(y_min, y_max)
 
 ax_00.set_xticks(x_ticks_major, minor=False)
@@ -332,7 +310,7 @@ ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linesty
 ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
 
 ax_00.set_ylabel(ylabel_00)
- 
+
 ax_00.set_xticklabels([])
 
 ax_00.legend(loc='upper left', ncol=2)
@@ -342,6 +320,7 @@ ax_00.legend(loc='upper left', ncol=2)
 ax_10.plot(x, np.abs(u_ref_1)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
 ax_10.plot(x, np.abs(u_1)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
+ax_10.set_xlim(x_min, x_max)
 ax_10.set_ylim(y_min, y_max)
 
 ax_10.set_xticks(x_ticks_major, minor=False)
@@ -362,6 +341,7 @@ ax_10.set_xticklabels([])
 ax_20.plot(x, np.abs(u_ref_2)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
 ax_20.plot(x, np.abs(u_2)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
+ax_20.set_xlim(x_min, x_max)
 ax_20.set_ylim(y_min, y_max)
 
 ax_20.set_xticks(x_ticks_major, minor=False)
@@ -382,6 +362,7 @@ ax_20.set_xticklabels([])
 ax_30.plot(x, np.abs(u_ref_3)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
 ax_30.plot(x, np.abs(u_3)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
+ax_30.set_xlim(x_min, x_max)
 ax_30.set_ylim(y_min, y_max)
 
 ax_30.set_xticks(x_ticks_major, minor=False)
@@ -398,9 +379,6 @@ ax_30.set_ylabel(ylabel_30)
 #==========================================================================================
 
 
-
-
-plt.tight_layout(0.5)
 
 if export_pdf == True:
     
