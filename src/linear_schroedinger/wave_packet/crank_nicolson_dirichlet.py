@@ -12,10 +12,10 @@ from linear_schroedinger.wave_packet.figure_1 import Figure1
 
 
 
-order_spatial_discretization = 4
+order_spatial_discretization = 2
 
 
-x0 = -2.5
+x0 = 0.0
 
 sigma_0 = 0.5
 
@@ -23,10 +23,10 @@ k0 = 4
 
 
 
-x_min = -10
-x_max = +10
+x_min = -8
+x_max = +8
 
-Jx = 200
+Jx = 400
 
 x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
@@ -34,7 +34,7 @@ dx = x[1] - x[0]
 
 
 
-T = 4
+T = 2
 
 dt = 0.0025
 
@@ -50,7 +50,8 @@ if order_spatial_discretization == 2:
     D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx-1, Jx-1))
     
     D_xx = D_xx / dx**2
-    
+
+""" 
 if order_spatial_discretization == 4:
     
     D_xx = diags([-1, 16, -30, 16, -1], [-2, -1, 0, 1, 2], shape=(Jx-1, Jx-1))
@@ -68,7 +69,7 @@ if order_spatial_discretization == 8:
     D_xx = diags([-9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9], [-4, -3, -2, -1, 0, 1, 2, 3, 4], shape=(Jx-1, Jx-1))
     
     D_xx = D_xx / (5040 * dx**2)
-
+"""
 
 
 E = eye(Jx-1)
@@ -115,6 +116,34 @@ fig_1.redraw()
 
 
 
+
+
+n_0 = 0
+n_1 = 200
+n_2 = 400
+n_3 = 600
+
+assert(n_0 % n_mod_times_analysis == 0)
+assert(n_1 % n_mod_times_analysis == 0)
+assert(n_2 % n_mod_times_analysis == 0)
+assert(n_3 % n_mod_times_analysis == 0)
+
+
+t_0 = times[n_0]
+t_1 = times[n_1]
+t_2 = times[n_2]
+t_3 = times[n_3]
+
+
+print(t_0)
+print(t_1)
+print(t_2)
+print(t_3)
+
+
+
+
+
 nr_times_analysis = 0
 
 for n in np.arange(times.size):
@@ -142,11 +171,280 @@ for n in np.arange(times.size):
         
         
         nr_times_analysis = nr_times_analysis + 1
+        
+        
+        if n == n_0:
+            
+            u_ref_0 = u_ref.copy()
+            u_0 = u_complete.copy()
+            
+        if n == n_1:
+            
+            u_ref_1 = u_ref.copy()
+            u_1 = u_complete.copy()
+            
+        if n == n_2:
+            
+            u_ref_2 = u_ref.copy()
+            u_2 = u_complete.copy()
+            
+        if n == n_3:
+            
+            u_ref_3 = u_ref.copy()
+            u_3 = u_complete.copy()
+            
+            
+        
     
     u = spsolve(A, B*u)
     
 
-input('press any key ...')
+
+
+
+
+
+
+
+
+
+
+from colors import mycolors
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+export_pdf = True
+
+if export_pdf == True:
+
+    mpl.use("pgf")
+    
+    plt.rcParams.update({
+        "text.usetex": True,
+        "pgf.rcfonts": False,
+        #
+        "axes.titlesize": 12,
+        "axes.labelsize": 12,
+        "axes.linewidth": 0.85,
+        "axes.labelpad": 4,
+        #
+        "xtick.bottom": False,
+        "ytick.left": False,
+        "xtick.major.pad": 2,
+        "ytick.major.pad": 2,
+        #
+        "legend.frameon": True,
+        "legend.framealpha": 1.0,
+        "legend.edgecolor": mycolors.wet_asphalt,
+        "legend.fontsize": 12,
+        "legend.fancybox": False,
+        "legend.shadow": True,
+        "legend.handlelength": 3.0,
+        # 
+        "pgf.preamble": "\n".join([
+            "\\usepackage{amsmath}",
+            "\\usepackage{bbm}",                    
+            ])
+    })
+    
+
+
+
+
+linestyle_u_ref = '-'
+linestyle_u = '--'
+
+linewidth_u_ref = 1.4
+linewidth_u     = 1.4
+
+color_u_ref = mycolors.peter_river
+color_u     = mycolors.wet_asphalt
+
+label_u_ref = '$u_\mathrm{ref}$'
+label_u     = '$u$'
+
+from colors.mycolors import color_gridlines_major
+from colors.mycolors import color_gridlines_minor
+
+linestyle_gridlines_major = '-'
+linestyle_gridlines_minor = '-'
+
+linewidth_gridlines_major = 0.50
+linewidth_gridlines_minor = 0.25
+
+x_ticks_major = np.array([-8, -4, 0, 4, 8])
+x_ticks_minor = np.array([-7, -6, -5, -3, -2, -1, 1, 2, 3, 5, 6, 7])
+            
+y_ticks_major = np.array([0, 0.5, 1.0])
+y_ticks_minor = np.array([0.25, 0.75])
+
+y_min = -0.2
+y_max = +1.2
+
+
+xlabel = '$x$'
+
+ylabel_00 = '$|u(x,t_0)|^2$'
+ylabel_10 = '$|u(x,t_1)|^2$'
+ylabel_20 = '$|u(x,t_2)|^2$'
+ylabel_30 = '$|u(x,t_3)|^2$'
+
+
+
+
+
+width  = 8.0
+height = 6.5
+
+scaling = 0.9
+
+height = scaling * height
+width  = scaling * width
+
+fig = plt.figure("figure_wave_packet_dirichlet", figsize=(width, height), facecolor="white", constrained_layout=False)
+
+
+# gridspec = fig.add_gridspec(ncols=1, nrows=4, left=0.075, right=0.95, bottom=0.1, top=0.925, wspace=0.5, hspace=0.1, width_ratios=[1], height_ratios=[1, 1, 1, 1])
+gridspec = fig.add_gridspec(ncols=1, nrows=4, width_ratios=[1], height_ratios=[1, 1, 1, 1])
+
+
+#==========================================================================================
+ax_00 = fig.add_subplot(gridspec[0, 0])
+ax_10 = fig.add_subplot(gridspec[1, 0])
+ax_20 = fig.add_subplot(gridspec[2, 0])
+ax_30 = fig.add_subplot(gridspec[3, 0])
+#==========================================================================================
+
+#==========================================================================================
+ax_00.plot(x, np.abs(u_ref_0)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
+ax_00.plot(x, np.abs(u_0)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+
+ax_00.set_ylim(y_min, y_max)
+
+ax_00.set_xticks(x_ticks_major, minor=False)
+ax_00.set_xticks(x_ticks_minor, minor=True)
+
+ax_00.set_yticks(y_ticks_major, minor=False)
+ax_00.set_yticks(y_ticks_minor, minor=True)
+
+ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
+ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
+
+ax_00.set_ylabel(ylabel_00)
+ 
+ax_00.set_xticklabels([])
+
+ax_00.legend(loc='upper left', ncol=2)
+#==========================================================================================
+
+#==========================================================================================
+ax_10.plot(x, np.abs(u_ref_1)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
+ax_10.plot(x, np.abs(u_1)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+
+ax_10.set_ylim(y_min, y_max)
+
+ax_10.set_xticks(x_ticks_major, minor=False)
+ax_10.set_xticks(x_ticks_minor, minor=True)
+
+ax_10.set_yticks(y_ticks_major, minor=False)
+ax_10.set_yticks(y_ticks_minor, minor=True)
+
+ax_10.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
+ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
+
+ax_10.set_ylabel(ylabel_10)
+    
+ax_10.set_xticklabels([])
+#==========================================================================================
+
+#==========================================================================================
+ax_20.plot(x, np.abs(u_ref_2)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
+ax_20.plot(x, np.abs(u_2)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+
+ax_20.set_ylim(y_min, y_max)
+
+ax_20.set_xticks(x_ticks_major, minor=False)
+ax_20.set_xticks(x_ticks_minor, minor=True)
+
+ax_20.set_yticks(y_ticks_major, minor=False)
+ax_20.set_yticks(y_ticks_minor, minor=True)
+
+ax_20.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
+ax_20.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
+
+ax_20.set_ylabel(ylabel_20)
+    
+ax_20.set_xticklabels([])
+#==========================================================================================
+
+#==========================================================================================
+ax_30.plot(x, np.abs(u_ref_3)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
+ax_30.plot(x, np.abs(u_3)**2,     linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+
+ax_30.set_ylim(y_min, y_max)
+
+ax_30.set_xticks(x_ticks_major, minor=False)
+ax_30.set_xticks(x_ticks_minor, minor=True)
+
+ax_30.set_yticks(y_ticks_major, minor=False)
+ax_30.set_yticks(y_ticks_minor, minor=True)
+
+ax_30.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
+ax_30.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
+
+ax_30.set_xlabel(xlabel)
+ax_30.set_ylabel(ylabel_30)
+#==========================================================================================
+
+
+
+
+plt.tight_layout(0.5)
+
+if export_pdf == True:
+    
+    path = "/home/jfmennemann/git/nls/pdf/"
+
+    filepath = path + "figure_wave_packet_dirichlet.pdf"
+
+    plt.savefig(filepath, backend='pgf')
+
+else:
+
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

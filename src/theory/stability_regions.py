@@ -27,9 +27,12 @@ if export_pdf == True:
         ])
     })
     
+ 
+ 
+from colors.mycolors import color_gridlines_major
+from colors.mycolors import color_gridlines_minor
+
     
-color_gridlines_major = '#666666'
-color_gridlines_minor = '#999999'
 
 color_stable = 'lightgray'
 
@@ -72,7 +75,7 @@ z_RK4            = np.abs(1 + Z + Z**2/2 + Z**3/6+ Z**4/24)
 width  = 8.00
 height = 5.65
 
-fig = plt.figure("figure_main", figsize=(width, height), facecolor="white", constrained_layout=False)
+fig = plt.figure("figure_stability_regions", figsize=(width, height), facecolor="white", constrained_layout=False)
 
 
 gridspec = fig.add_gridspec(ncols=2, nrows=2, left=0.075, right=0.95, bottom=0.1, top=0.925, wspace=0.5, hspace=0.5, width_ratios=[1, 1], height_ratios=[1, 1])
@@ -213,12 +216,35 @@ ax_RK4.set_ylabel(r'$\operatorname{Im}(z)$')
 
 # plt.tight_layout(0.5)
 
-if export_pdf == True:
 
-    plt.savefig('figure_stability_regions.pdf', backend='pgf')
+if export_pdf == True:
+    
+    path = "/home/jfmennemann/git/nls/pdf/"
+
+    filepath = path + "figure_stability_regions.pdf"
+
+    plt.savefig(filepath, backend='pgf')
 
 else:
 
     plt.show()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+#==================================================================================================
+
+#==================================================================================================
+
+
 
 
