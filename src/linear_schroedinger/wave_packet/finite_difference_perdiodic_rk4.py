@@ -16,6 +16,7 @@ order_spatial_discretization = 8
 
 
 
+
 x0 = 0
 
 sigma_0 = 0.5
