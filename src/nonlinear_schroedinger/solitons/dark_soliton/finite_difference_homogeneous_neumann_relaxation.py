@@ -22,13 +22,13 @@ from nonlinear_schroedinger.solitons.dark_soliton.figure_1 import Figure1
 
 
 
-v = 2.5
+v = 1
 
-x0 = -4
+x0 = -5
 theta_0 = 0
 
 u0 = 10
-beta = 2
+beta = 1
 phi = 0.0 * np.pi
 
 
@@ -47,9 +47,9 @@ dx = x[1] - x[0]
 
 
 
-T = 4
+T = 20
 
-dt = 0.001
+dt = 0.01
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -67,29 +67,6 @@ if order_spatial_discretization == 2:
     
     D_xx = D_xx / dx**2
 
-"""   
-if order_spatial_discretization == 4:
-    
-    D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
-    
-    D_xx = D_xx / (12 * dx**2)
-    
-if order_spatial_discretization == 6:
-    
-    D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-    
-    D_xx = D_xx / (180 * dx**2)
-    
-if order_spatial_discretization == 8:
-    
-    D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-        
-    D_xx = D_xx / (5040 * dx**2)
-"""
-
-
-
-
 
 
 
@@ -106,9 +83,7 @@ assert(psi_old.size ==Jx+1)
 
 
 
-
-
-n_mod_times_analysis = 20
+n_mod_times_analysis = 10
 
 times_analysis = times[::n_mod_times_analysis]
 

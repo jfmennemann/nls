@@ -16,13 +16,13 @@ from nonlinear_schroedinger.solitons.dark_soliton.figure_1 import Figure1
 
 
 
-v = 2.5
+v = 1
 
 x0 = -5
 theta_0 = 0
 
 u0 = 10
-beta = 2
+beta = 1
 phi = 0.0 * np.pi
 
 
