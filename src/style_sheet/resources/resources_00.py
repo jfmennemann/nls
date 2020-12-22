@@ -60,6 +60,9 @@ gridspec = fig.add_gridspec(ncols=1, nrows=4, left=0.075, right=0.95, bottom=0.1
 
 # plt.tight_layout(0.5)
 
+# gridspec = fig.add_gridspec(ncols=1, nrows=9, left=0.085, right=0.99, bottom=0.06, top=0.99, wspace=spacing_x, hspace=spacing_y, width_ratios=[1], height_ratios=[1, 1, 1, 1, 1, 1, 1, 1, 1])
+
+
 
 
 

@@ -18,14 +18,14 @@ order_spatial_discretization = 8
 
 x0 = 0
 
-sigma_0 = 0.25
+sigma_0 = 0.5
 
-k0 = 10
+k0 = 4
 
 
 
-x_min = -4
-x_max = +4
+x_min = -8
+x_max = +8
 
 L = x_max - x_min
 

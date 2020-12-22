@@ -3,18 +3,19 @@ from style_sheet import mycolors
 width_figure_n_colums_1 = 6
 
 
-
-# color_u_ref = mycolors.peter_river
+color_u_ref = mycolors.peter_river
 # color_u_ref = mycolors.alizarin
 # color_u_ref = mycolors.turquoise
+# color_u_ref = mycolors.fluorescent_red
 # color_u_ref = mycolors.emerald
-color_u_ref = mycolors.fluorescent_red
 
-color_u     = mycolors.black
+# color_u     = mycolors.peter_river
+# color_u     = mycolors.alizarin
+color_u     = mycolors.wet_asphalt
 
 
-linewidth_u_ref = 1.75
-linewidth_u     = 0.75
+linewidth_u_ref = 1.50
+linewidth_u     = 1.25
 
 linestyle_u_ref = '-'
 linestyle_u     = '-'
