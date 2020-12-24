@@ -16,7 +16,6 @@ from differentiation import finite_differences_1d
 
 
 
-
 order_spatial_discretization = 8
 
 
@@ -34,12 +33,11 @@ x_max = +4
 
 L = x_max - x_min
 
-Jx = 200
+Jx = 100
 
 x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
 dx = x[1] - x[0]
-
 
 
 
@@ -68,6 +66,7 @@ if order_spatial_discretization == 8:
 
 
 
+
 dt = 0.001
 
 
@@ -87,31 +86,24 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
+u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-
-
-u = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, -v, +2, theta_0, beta)
-
-u = u[0:-1]
-
-psi_old = np.abs(u)**2
+u = u_ref[0:-1]
 
 assert(u.size == Jx)
-assert(psi_old.size ==Jx)
 
-
-u_complete = np.zeros_like(x, dtype=np.complex128)
+u_complete = np.zeros_like(u_ref)
 
 u_complete[0:-1] = u
 
 u_complete[-1] = u_complete[0]
 
 
-u_ref = np.nan * np.ones_like(u_complete)
 
 
 
-n_mod_times_analysis = 10
+
+n_mod_times_analysis = 50
 
 times_analysis = times[::n_mod_times_analysis]
 
@@ -144,6 +136,18 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
+        u_ref = (
+                + bright_soliton(x+0*L, t, a, v, x0, theta_0, beta) 
+                + bright_soliton(x+1*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+3*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+4*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+5*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+6*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+7*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
+                )
+        
         u_complete[0:-1] = u
         u_complete[-1] = u_complete[0]
         
@@ -157,7 +161,7 @@ for n in np.arange(times.size):
         
         
         
-        
+        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
         
         times_analysis[nr_times_analysis] = t 
         
@@ -174,17 +178,13 @@ for n in np.arange(times.size):
         nr_times_analysis = nr_times_analysis + 1
     
     
-    psi_new = 2 * np.abs(u)**2 - psi_old
+    u_abs_squared = np.abs(u)**2
     
-    b = u + 0.25 * 1j * dt * D2 * u - 0.5 * 1j * dt * beta * psi_new * u
+    b =       u + 0.25 * 1j * dt * D2 * u - 0.5 * 1j * dt * beta * u_abs_squared * u
     
-    A = eye(Jx) - 0.25 * 1j * dt * D2 + 0.5 * 1j * dt * beta * spdiags(psi_new, 0, Jx, Jx)
+    A = eye(Jx) - 0.25 * 1j * dt * D2     + 0.5 * 1j * dt * beta * spdiags(u_abs_squared, 0, Jx, Jx)
     
     u = spsolve(A, b)
-    
-    psi_old = psi_new
-    
-    
     
 
 input('press any key ...')

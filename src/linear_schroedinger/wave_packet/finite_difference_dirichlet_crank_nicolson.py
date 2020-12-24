@@ -6,7 +6,7 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from linear_schroedinger.wave_packet.reference_solutions import gaussian
+from linear_schroedinger.wave_packet.reference_solution import gaussian
 
 from linear_schroedinger.wave_packet.figure_1 import Figure1
 

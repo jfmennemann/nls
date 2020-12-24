@@ -2,6 +2,7 @@ from numpy import exp
 from numpy import cosh
 from numpy import sqrt
 
+
 def bright_soliton(x, t, a, v, x0, theta_0, beta):
     
     assert(beta < 0)

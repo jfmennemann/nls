@@ -1,4 +1,3 @@
-from scipy.sparse import diags
 from scipy.sparse import eye
 from scipy.sparse import spdiags
 
@@ -8,9 +7,12 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from nonlinear_schroedinger.solitons.bright_soliton.reference_solutions import bright_soliton
+from nonlinear_schroedinger.solitons.bright_soliton.reference_solution import bright_soliton
 
 from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
+
+
+from differentiation import finite_differences_1d
 
 
 
@@ -42,29 +44,23 @@ dx = x[1] - x[0]
 
 
 if order_spatial_discretization == 2:
-     
-    D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
     
-    D_xx = D_xx / dx**2
-    
+    D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
+
+
 if order_spatial_discretization == 4:
     
-    D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
+    D2 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
     
-    D_xx = D_xx / (12 * dx**2)
     
 if order_spatial_discretization == 6:
     
-    D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
+    D2 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
     
-    D_xx = D_xx / (180 * dx**2)
     
 if order_spatial_discretization == 8:
     
-    D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-        
-    D_xx = D_xx / (5040 * dx**2)
-
+    D2 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
 
 
 
@@ -188,9 +184,9 @@ for n in np.arange(times.size):
     
     psi_new = 2 * np.abs(u)**2 - psi_old
     
-    b = u + 0.25 * 1j * dt * D_xx * u - 0.5 * 1j * dt * beta * psi_new * u
+    b = u + 0.25 * 1j * dt * D2 * u - 0.5 * 1j * dt * beta * psi_new * u
     
-    A = eye(Jx) - 0.25 * 1j * dt * D_xx + 0.5 * 1j * dt * beta * spdiags(psi_new, 0, Jx, Jx)
+    A = eye(Jx) - 0.25 * 1j * dt * D2 + 0.5 * 1j * dt * beta * spdiags(psi_new, 0, Jx, Jx)
     
     u = spsolve(A, b)
     

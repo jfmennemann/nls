@@ -53,7 +53,7 @@ if order_spatial_discretization == 2:
     D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx+1, Jx+1))
     
     D_xx = D_xx / dx**2
-    
+
 if order_spatial_discretization == 4:
     
     D_xx = diags([-1, 16, -30, 16, -1], [-2, -1, 0, 1, 2], shape=(Jx+1, Jx+1))

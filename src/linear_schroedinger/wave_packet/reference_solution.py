@@ -1,4 +1,6 @@
-from numpy import sqrt, exp
+from numpy import exp
+from numpy import sqrt
+
 
 def gaussian(x, t, x0, sigma_0, k0):
     
