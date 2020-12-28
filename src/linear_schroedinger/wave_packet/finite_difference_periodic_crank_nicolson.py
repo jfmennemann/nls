@@ -213,7 +213,7 @@ for n in np.arange(times.size+1):
         
         
         fig_1.update_u(u_complete, u_ref)
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
         
         fig_1.redraw()
         

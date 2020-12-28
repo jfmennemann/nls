@@ -22,14 +22,19 @@ class Figure1(object):
         
         assert(np.abs(x[index_center_x])<1e-15)
         
-        T = times[-1]
+        # T = times[-1]
         
         
         self.fig_name = "figure_1"
-                
-        self.fig = plt.figure(self.fig_name, facecolor="white", constrained_layout=False)
         
         
+        
+        
+        
+        width  = 6
+        height = 4
+
+        self.fig = plt.figure(self.fig_name, figsize=(width, height), facecolor="white", constrained_layout=False)
         
         window = self.fig.canvas.window()
         
@@ -38,42 +43,8 @@ class Figure1(object):
         
         
         
-        if screen_size == 'small':
-            
-            resolution = '1920x1080'
-            
-        elif screen_size == 'large':
         
-            resolution = '2560x1440'
-        
-        
-        if resolution == '2560x1440':
-            
-            n_pixels_x = 1000
-            n_pixels_y = 1000
-            
-            pos_x = 2560 - n_pixels_x
-            pos_y = 0
-            
-            plt.rcParams.update({'font.size': 10})
-            
-        
-        if resolution == '1920x1080':
-            
-            n_pixels_x = 800
-            n_pixels_y = 600
-            
-            pos_x = 1920 - n_pixels_x
-            pos_y = 0
-            
-            plt.rcParams.update({'font.size': 6})
-        
-        
-        window.setGeometry(pos_x, pos_y, n_pixels_x, n_pixels_y)
-        
-        
-        
-        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=4, left=0.1, bottom=0.065, right=0.985, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1, 2])
+        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=3, left=0.1, bottom=0.065, right=0.985, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1])
         
         
         
@@ -81,7 +52,7 @@ class Figure1(object):
         ax_00 = self.fig.add_subplot(self.gridspec[0, 0])
         ax_10 = self.fig.add_subplot(self.gridspec[1, 0])
         ax_20 = self.fig.add_subplot(self.gridspec[2, 0])
-        ax_30 = self.fig.add_subplot(self.gridspec[3, 0])
+        # ax_30 = self.fig.add_subplot(self.gridspec[3, 0])
         #==========================================================================================
         
         #==========================================================================================
@@ -130,6 +101,7 @@ class Figure1(object):
         #==========================================================================================
         
         #==========================================================================================
+        """
         # self.line_rel_error, = ax_30.plot([], [], linewidth=1.0, linestyle='-', color='k')
         self.line_rel_error, = ax_30.semilogy([], [], linewidth=1.0, linestyle='-', color='k')
         
@@ -142,10 +114,11 @@ class Figure1(object):
         
         ax_30.set_xlabel('t')
         ax_30.set_ylabel('rel_error')
+        """
         #==========================================================================================
         
         
-            
+           
         plt.ion()
         
         plt.draw()
@@ -166,11 +139,12 @@ class Figure1(object):
         self.line_u_ref_imag.set_ydata(np.real(u_ref))
         
     
+    """
     def update_rel_error(self, rel_error_of_times_analysis, times_analysis, nr_times_analysis):
         
         self.line_rel_error.set_xdata(times_analysis[0:nr_times_analysis])
         self.line_rel_error.set_ydata(rel_error_of_times_analysis[0:nr_times_analysis])
-        
+    """ 
     
     
     

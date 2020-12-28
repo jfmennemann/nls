@@ -5,13 +5,16 @@ from numpy import array
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-from scipy.sparse import diags
 from scipy.sparse import spdiags
 
 
 from linear_schroedinger.harmonic_oscillator.reference_solutions import coherent_state
 
 from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
+
+
+
+from differentiation import finite_differences_1d
 
 
 
@@ -47,29 +50,25 @@ dx = x[1] - x[0]
 
 
 
+
 if order_spatial_discretization == 2:
-     
-    D_xx = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
     
-    D_xx = D_xx / dx**2
-    
+    D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
+
+
 if order_spatial_discretization == 4:
     
-    D_xx = diags([16, -1, -1, 16, -30, 16, -1, -1, 16], [-(Jx-1), -(Jx-2), -2, -1, 0, 1, 2, Jx-2, Jx-1], shape=(Jx, Jx))
-
-    D_xx = D_xx / (12 * dx**2)
+    D2 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
+    
     
 if order_spatial_discretization == 6:
     
-    D_xx = diags([270, -27, 2, 2, -27, 270, -490, 270, -27, 2, 2, -27, 270], [-(Jx-1), -(Jx-2), -(Jx-3), -3, -2, -1, 0, 1, 2, 3, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
+    D2 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
     
-    D_xx = D_xx / (180 * dx**2)
     
 if order_spatial_discretization == 8:
     
-    D_xx = diags([8064, -1008, 128, -9, -9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9, -9, 128, -1008, 8064], [-(Jx-1), -(Jx-2), -(Jx-3), -(Jx-4), -4, -3, -2, -1, 0, 1, 2, 3, 4, Jx-4, Jx-3, Jx-2, Jx-1], shape=(Jx, Jx))
-    
-    D_xx = D_xx / (5040 * dx**2)
+    D2 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
 
 
 
@@ -81,7 +80,7 @@ V = 0.5 * omega**2 * x**2
 diag_V = spdiags(array([V[0:-1]]), array([0]), Jx, Jx, 'csr')
 
 
-A = 1j * (0.5 * D_xx - diag_V)
+A = 1j * (0.5 * D2 - diag_V)
 
 
 
@@ -96,7 +95,7 @@ dt = 1.0 * np.sqrt(8) / max_abs_lambda
 
 print(dt)
 
-input('press any key to continue ... ')
+# input('press any key to continue ... ')
 
 
 
@@ -190,9 +189,9 @@ for n in np.arange(times.size):
         
         fig_1.update_u(u_complete, u_ref)
         
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
         
-        fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
         
         fig_1.redraw()
         

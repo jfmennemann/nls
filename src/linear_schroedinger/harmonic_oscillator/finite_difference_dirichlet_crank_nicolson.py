@@ -1,4 +1,4 @@
-from scipy.sparse import diags, eye
+from scipy.sparse import eye
 from scipy.sparse import spdiags
 
 from scipy.sparse.linalg import spsolve
@@ -12,6 +12,10 @@ from numpy import array
 from linear_schroedinger.harmonic_oscillator.reference_solutions import coherent_state
 
 from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
+
+
+from differentiation import finite_differences_1d
+
 
 
 order_spatial_discretization = 8
@@ -47,7 +51,7 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
-
+"""
 if order_spatial_discretization == 2:
     
     D_xx = diags([1, -2, 1], [-1, 0, 1], shape=(Jx+1, Jx+1))
@@ -71,7 +75,27 @@ if order_spatial_discretization == 8:
     D_xx = diags([-9, 128, -1008, 8064, -14350, 8064, -1008, 128, -9], [-4, -3, -2, -1, 0, 1, 2, 3, 4], shape=(Jx+1, Jx+1))
     
     D_xx = D_xx / (5040 * dx**2)
+"""
 
+
+if order_spatial_discretization == 2:
+    
+    D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx+1, dx)
+
+
+if order_spatial_discretization == 4:
+    
+    D2 = finite_differences_1d.get_D2_circulant_4th_order(Jx+1, dx)
+    
+    
+if order_spatial_discretization == 6:
+    
+    D2 = finite_differences_1d.get_D2_circulant_6th_order(Jx+1, dx)
+    
+    
+if order_spatial_discretization == 8:
+    
+    D2 = finite_differences_1d.get_D2_circulant_8th_order(Jx+1, dx)
 
 
 
@@ -85,8 +109,8 @@ diag_V = spdiags(array([V]), array([0]), Jx+1, Jx+1, 'csr')
 E = eye(Jx+1)
 
 
-A = E  -  0.25 * dt * 1j * D_xx  +  0.5 * dt * 1j * diag_V
-B = E  +  0.25 * dt * 1j * D_xx  -  0.5 * dt * 1j * diag_V
+A = E  -  0.25 * dt * 1j * D2  +  0.5 * dt * 1j * diag_V
+B = E  +  0.25 * dt * 1j * D2  -  0.5 * dt * 1j * diag_V
 
 
 
@@ -154,9 +178,9 @@ for n in np.arange(times.size):
         
         fig_1.update_u(u, u_ref)
         
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
         
-        fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
         
         fig_1.redraw()
         

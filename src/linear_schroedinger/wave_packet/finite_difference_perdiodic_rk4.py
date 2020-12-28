@@ -42,43 +42,7 @@ dx = x[1] - x[0]
 
 
 
-if order_spatial_discretization == 2:
 
-    # dt_upper_bound_2nd_order = np.sqrt(2) * dx**2
-    dt_upper_bound_2nd_order = 1.414 * dx**2
-    
-    dt = 1.0 * dt_upper_bound_2nd_order
-    
-    
-if order_spatial_discretization == 4:
-    
-    # dt_upper_bound_4th_order = (3/4) * np.sqrt(2) * dx**2
-    dt_upper_bound_4th_order = 1.060 * dx**2
-
-    dt = 1.0 * dt_upper_bound_4th_order
-    
-    
-if order_spatial_discretization == 6:
-    
-    dt_upper_bound_6th_order = 0.9350 * dx**2
-
-    dt = 1.0 * dt_upper_bound_6th_order
-    
-      
-if order_spatial_discretization == 8:
-    
-    dt_upper_bound_8th_order = 0.87007 * dx**2
-    
-    dt = 1.0 * dt_upper_bound_8th_order
-    
-
-
-
-T = 2
-
-n_times = np.int(np.round(T / dt)) + 1
-        
-times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
@@ -104,6 +68,50 @@ if order_spatial_discretization == 8:
 
 
 A = 1j * 0.5 * D2
+
+
+
+
+
+if order_spatial_discretization == 2:
+
+    # dt_upper_bound_2nd_order = np.sqrt(2) * dx**2
+    dt_upper_bound_2nd_order = 1.414 * dx**2
+    
+    dt = 1.0 * dt_upper_bound_2nd_order
+    
+    
+if order_spatial_discretization == 4:
+    
+    # dt_upper_bound_4th_order = (3/4) * np.sqrt(2) * dx**2
+    dt_upper_bound_4th_order = 1.060 * dx**2
+
+    dt = 1.0 * dt_upper_bound_4th_order
+    
+    
+if order_spatial_discretization == 6:
+    
+    dt_upper_bound_6th_order = 0.935 * dx**2
+
+    dt = 1.0 * dt_upper_bound_6th_order
+    
+      
+if order_spatial_discretization == 8:
+    
+    dt_upper_bound_8th_order = 0.870 * dx**2
+    
+    dt = 1.0 * dt_upper_bound_8th_order
+    
+
+
+
+T = 2
+
+n_times = np.int(np.round(T / dt)) + 1
+        
+times = np.linspace(0, T, n_times, endpoint=True)
+
+
 
 
 
@@ -208,7 +216,7 @@ for n in np.arange(times.size):
         
         fig_1.update_u(u_complete, u_ref)
         
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
+        # fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
         
         fig_1.redraw()
         

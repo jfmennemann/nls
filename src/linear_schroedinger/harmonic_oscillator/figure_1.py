@@ -26,7 +26,10 @@ class Figure1(object):
         
         
         self.fig_name = "figure_1"
-                
+        
+        
+        
+        """     
         self.fig = plt.figure(self.fig_name, facecolor="white", constrained_layout=False)
         
         
@@ -70,10 +73,22 @@ class Figure1(object):
         
         
         window.setGeometry(pos_x, pos_y, n_pixels_x, n_pixels_y)
+        """
+        
+        
+        width  = 6
+        height = 4
+
+        self.fig = plt.figure(self.fig_name, figsize=(width, height), facecolor="white", constrained_layout=False)
+        
+        window = self.fig.canvas.window()
+        
+        window.findChild(QtWidgets.QToolBar).setVisible(False)
+        window.statusBar().setVisible(False)
         
         
         
-        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=5, left=0.1, bottom=0.065, right=0.95, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1, 2, 2])
+        self.gridspec = self.fig.add_gridspec(ncols=1, nrows=3, left=0.1, bottom=0.065, right=0.95, top=0.98, wspace=0.40, hspace=0.65, width_ratios=[1], height_ratios=[1, 1, 1])
         
         
         
@@ -81,8 +96,8 @@ class Figure1(object):
         ax_00 = self.fig.add_subplot(self.gridspec[0, 0])
         ax_10 = self.fig.add_subplot(self.gridspec[1, 0])
         ax_20 = self.fig.add_subplot(self.gridspec[2, 0])
-        ax_30 = self.fig.add_subplot(self.gridspec[3, 0])
-        ax_40 = self.fig.add_subplot(self.gridspec[4, 0])
+        # ax_30 = self.fig.add_subplot(self.gridspec[3, 0])
+        # ax_40 = self.fig.add_subplot(self.gridspec[4, 0])
         #==========================================================================================
         
         #==========================================================================================
@@ -144,6 +159,7 @@ class Figure1(object):
         #==========================================================================================
         
         #==========================================================================================
+        """
         self.line_defect_of_mass, = ax_30.semilogy([], [], linewidth=1.0, linestyle='-', color='k')
         
         ax_30.set_xlim(0, T)
@@ -155,9 +171,11 @@ class Figure1(object):
         
         ax_30.set_xlabel('t')
         ax_30.set_ylabel('defect of mass')
+        """
         #==========================================================================================
         
         #==========================================================================================
+        """
         self.line_rel_error, = ax_40.semilogy([], [], linewidth=1.0, linestyle='-', color='k')
         
         ax_40.set_xlim(0, T)
@@ -169,6 +187,7 @@ class Figure1(object):
         
         ax_40.set_xlabel('t')
         ax_40.set_ylabel('rel_error')
+        """
         #==========================================================================================
         
         
@@ -198,17 +217,20 @@ class Figure1(object):
         self.line_V.set_ydata(V)
         
     
+    """
     def update_rel_error(self, rel_error_of_times_analysis, times_analysis, nr_times_analysis):
         
         self.line_rel_error.set_xdata(times_analysis[0:nr_times_analysis])
         self.line_rel_error.set_ydata(rel_error_of_times_analysis[0:nr_times_analysis])
+    """
     
-        
+    
+    """ 
     def update_defect_of_mass(self, defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis):
         
         self.line_defect_of_mass.set_xdata(times_analysis[0:nr_times_analysis])
         self.line_defect_of_mass.set_ydata(defect_of_mass_of_times_analysis[0:nr_times_analysis])
-    
+    """
     
     def redraw(self):
         
