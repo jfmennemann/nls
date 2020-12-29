@@ -49,7 +49,7 @@ D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
 
 print(dx**2 * D2.toarray())
 
-input('press any key ...')
+# input('press any key ...')
 
 
 
