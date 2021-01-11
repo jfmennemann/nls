@@ -29,19 +29,6 @@ color_rel_error_rk4_8 = mycolors.peter_river
 
 
 
-
-color_rel_error_cn_2 = mycolors.wet_asphalt
-color_rel_error_cn_4 = mycolors.wet_asphalt
-color_rel_error_cn_6 = mycolors.wet_asphalt
-color_rel_error_cn_8 = mycolors.wet_asphalt
-
-color_rel_error_rk4_2 = mycolors.alizarin
-color_rel_error_rk4_4 = mycolors.alizarin
-color_rel_error_rk4_6 = mycolors.alizarin
-color_rel_error_rk4_8 = mycolors.alizarin
-
-
-
 linewidth_u_ref = 1.50
 linewidth_u     = 1.25
 

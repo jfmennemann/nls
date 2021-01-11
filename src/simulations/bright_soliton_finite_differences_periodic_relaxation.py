@@ -36,7 +36,9 @@ L = x_max - x_min
 
 Jx = 200
 
-x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+
+x = x_complete[0:-1]
 
 dx = x[1] - x[0]
 
@@ -88,21 +90,12 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-u = u_ref[0:-1]
+u = u_ref.copy()
 
-psi_old = np.abs(u_ref[0:-1])**2
+psi_old = np.abs(u_ref)**2
 
 assert(u.size == Jx)
 assert(psi_old.size ==Jx)
-
-
-u_complete = np.zeros_like(u_ref)
-
-u_complete[0:-1] = u
-
-u_complete[-1] = u_complete[0]
-
-
 
 
 
@@ -121,7 +114,7 @@ rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 fig_1 = Figure1(x, 20, 0, None, u_ref)
 
-fig_1.update_u(u_complete, u_ref)
+fig_1.update_u(u, u_ref)
    
 fig_1.redraw()
 
@@ -152,29 +145,21 @@ for n in np.arange(times.size):
                 + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
                 )
         
-        u_complete[0:-1] = u
-        u_complete[-1] = u_complete[0]
-        
-        
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
         
         
-        print(norm_u_of_times_analysis[nr_times_analysis] / norm_u_of_times_analysis[0])
+        # print(norm_u_of_times_analysis[nr_times_analysis] / norm_u_of_times_analysis[0])
         
         defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
         
         
         
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
+        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
         
         times_analysis[nr_times_analysis] = t 
         
         
-        fig_1.update_u(u_complete, u_ref)
-        
-        # fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
-        
-        # fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
+        fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
         
