@@ -1,4 +1,4 @@
-from scipy.sparse import eye
+from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
 
@@ -6,29 +6,28 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from linear_schroedinger.wave_packet.reference_solution import gaussian
+from linear_schroedinger.harmonic_oscillator.reference_solution import coherent_state
 
-from linear_schroedinger.wave_packet.figure_1 import Figure1
+from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
 
 
 
-x0 = 0.0
 
-sigma_0 = 0.5
+x0 = 1
 
-k0 = 8
-
+omega = 5
 
 
-x_min = -8
-x_max = +8
+
+x_min = -3
+x_max = +3
 
 L = x_max - x_min
 
-Jx = 250
+Jx = 100
 
 x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
@@ -40,11 +39,11 @@ dx = x[1] - x[0]
 
 T = 2
 
-# dt = 0.0025
-# dt = 0.002
+
 dt = 0.0025
 
-n_mod_times_analysis = 5
+# n_mod_times_analysis = 25
+n_mod_times_analysis = 1
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -54,36 +53,46 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
+
+
 E = eye(Jx)
+
+V = 0.5 * omega**2 * x**2
+
+diag_V = spdiags(np.array([V]), np.array([0]), Jx, Jx, 'csr')
+
 
 D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
 D4 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
 D6 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
 D8 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
 
-A_cn_2 = E - 0.25 * 1j * dt * D2
-A_cn_4 = E - 0.25 * 1j * dt * D4
-A_cn_6 = E - 0.25 * 1j * dt * D6
-A_cn_8 = E - 0.25 * 1j * dt * D8
-
-B_cn_2 = E + 0.25 * 1j * dt * D2
-B_cn_4 = E + 0.25 * 1j * dt * D4
-B_cn_6 = E + 0.25 * 1j * dt * D6
-B_cn_8 = E + 0.25 * 1j * dt * D8
-
-
-A_rk4_2 = 1j * 0.5 * D2
-A_rk4_4 = 1j * 0.5 * D4
-A_rk4_6 = 1j * 0.5 * D6
-A_rk4_8 = 1j * 0.5 * D8
 
 
 
+A_cn_2 = E - 0.25 * 1j * dt * D2 + 0.5 * dt * 1j * diag_V
+A_cn_4 = E - 0.25 * 1j * dt * D4 + 0.5 * dt * 1j * diag_V
+A_cn_6 = E - 0.25 * 1j * dt * D6 + 0.5 * dt * 1j * diag_V
+A_cn_8 = E - 0.25 * 1j * dt * D8 + 0.5 * dt * 1j * diag_V
+
+B_cn_2 = E + 0.25 * 1j * dt * D2 - 0.5 * dt * 1j * diag_V
+B_cn_4 = E + 0.25 * 1j * dt * D4 - 0.5 * dt * 1j * diag_V
+B_cn_6 = E + 0.25 * 1j * dt * D6 - 0.5 * dt * 1j * diag_V
+B_cn_8 = E + 0.25 * 1j * dt * D8 - 0.5 * dt * 1j * diag_V
+
+
+A_rk4_2 = 1j * (0.5 * D2 - diag_V)
+A_rk4_4 = 1j * (0.5 * D4 - diag_V)
+A_rk4_6 = 1j * (0.5 * D6 - diag_V)
+A_rk4_8 = 1j * (0.5 * D8 - diag_V)
 
 
 
 
-u_ref_0 = gaussian(x, 0.0, x0, sigma_0, k0)
+
+
+
+u_ref_0 = coherent_state(x, 0.0, x0, omega)
 
 u_cn_2 = u_ref_0.copy()
 u_cn_4 = u_ref_0.copy()
@@ -145,7 +154,13 @@ fig_1 = Figure1(x, times, screen_size='large')
 
 fig_1.update_u(u_rk4_8, u_ref_0)
 
+fig_1.update_V(V)
+
 fig_1.redraw()
+
+
+
+
 
 
 
@@ -212,7 +227,7 @@ assert(n_8 % n_mod_times_analysis == 0)
 
 nr_times_analysis = 0
 
-for n in np.arange(times.size+1):
+for n in np.arange(times.size):
     
     if n % n_mod_times_analysis == 0:
         
@@ -222,29 +237,8 @@ for n in np.arange(times.size+1):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + gaussian(x - 10*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  9*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  8*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  7*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  6*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  5*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  4*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  3*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  2*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  1*L, t, x0, sigma_0, k0)
-                + gaussian(x +  0*L, t, x0, sigma_0, k0)
-                + gaussian(x +  1*L, t, x0, sigma_0, k0)
-                + gaussian(x +  2*L, t, x0, sigma_0, k0)
-                + gaussian(x +  3*L, t, x0, sigma_0, k0)
-                + gaussian(x +  4*L, t, x0, sigma_0, k0)
-                + gaussian(x +  5*L, t, x0, sigma_0, k0)
-                + gaussian(x +  6*L, t, x0, sigma_0, k0)
-                + gaussian(x +  7*L, t, x0, sigma_0, k0)
-                + gaussian(x +  8*L, t, x0, sigma_0, k0)
-                + gaussian(x +  9*L, t, x0, sigma_0, k0)
-                + gaussian(x + 10*L, t, x0, sigma_0, k0)
-                )
+        u_ref = coherent_state(x, t, x0, omega)
+        
         
         rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_2-u_ref) / np.linalg.norm(u_ref)
         rel_error_cn_4_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_4-u_ref) / np.linalg.norm(u_ref)
@@ -388,7 +382,11 @@ print()
 from style_sheet import mystyle
 
 import matplotlib as mpl
+
 import matplotlib.pyplot as plt
+
+from matplotlib.ticker import FixedLocator, NullFormatter
+
 
 export_pdf = True
 
@@ -452,26 +450,26 @@ linestyle_gridlines_minor = mystyle.linestyle_gridlines_minor
 linewidth_gridlines_major = mystyle.linewidth_gridlines_major
 linewidth_gridlines_minor = mystyle.linewidth_gridlines_minor
 
-x_ticks_major = np.array([-8, -4, 0, 4, 8])
-x_ticks_minor = np.array([-7, -6, -5, -3, -2, -1, 1, 2, 3, 5, 6, 7])
+x_ticks_major = np.array([-3, -2, -1, 0, 1, 2, 3])
+x_ticks_minor = np.array([-2.5, -1.5, -0.5, 0.5, 1.5, 2.5])
 
 t_ticks_major = np.array([0, 0.5, 1.0, 1.5, 2])
 t_ticks_minor = np.array([0.25, 0.75, 1.25, 1.75])
           
-y_ticks_major_left_column = np.array([0, 0.5, 1.0])
-y_ticks_minor_left_column = np.array([0.25, 0.75])
+y_ticks_major_left_column = np.array([0, 0.5, 1.0, 1.5])
+y_ticks_minor_left_column = np.array([0.25, 0.75, 1.25])
 
-y_ticks_major_right_column = np.array([-1, 0, 1])
-y_ticks_minor_right_column = np.array([-0.5, 0.5])
+y_ticks_major_right_column = np.array([-1.5, 0, 1.5])
+y_ticks_minor_right_column = np.array([-1, -0.5, 0.5, 1])
 
-x_min = -8.5
-x_max = +8.5
+x_min = -3.25
+x_max = +3.25
 
 y_min_left_column = -0.1
-y_max_left_column = +1.1
+y_max_left_column = +1.6
 
-y_min_right_column = -1.2
-y_max_right_column = +1.2
+y_min_right_column = -1.7
+y_max_right_column = +1.7
 
 
 xlabel = r'$x$'
@@ -513,11 +511,11 @@ ylabel_81 = r'$\operatorname{Re}\, u(x,t_8)$'
 width  = 8
 height = 8
 
-name_fig_1 = "figure_wave_packet_snapshots_cn4"
+name_fig_1 = "figure_coherent_state_snapshots_cn4"
 
 fig_1 = plt.figure(name_fig_1, figsize=(width, height), facecolor="white", constrained_layout=False)
 
-spacing_x = 0.2
+spacing_x = 0.5
 spacing_y = 0.1
 
 gridspec = fig_1.add_gridspec(ncols=2, nrows=9, left=0.065, right=0.99, bottom=0.05, top=0.99, wspace=spacing_x, hspace=spacing_y)
@@ -548,9 +546,6 @@ ax_81 = fig_1.add_subplot(gridspec[8, 1])
 
 #==========================================================================================
 # ax_00.plot(x, np.abs(u_ref_0)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-
-print(x.size)
-print(u_0.size)
 
 ax_00.plot(x, np.abs(u_0)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
@@ -966,13 +961,10 @@ ax_81.set_ylabel(ylabel_81)
 
 
 
-
-
-
 width  = 8
 height = 6
 
-name_fig_2 = "figure_wave_packet_time_evolution"
+name_fig_2 = "figure_coherent_state_time_evolution"
 
 fig_2 = plt.figure(name_fig_2, figsize=(width, height), facecolor="white", constrained_layout=False)
 
@@ -988,24 +980,55 @@ ax_10 = fig_2.add_subplot(gridspec[1, 0])
 
 
 #==========================================================================================
-ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{CN}_2$')
-ax_00.semilogy(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{CN}_4$')
-ax_00.semilogy(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{CN}_6$')
-ax_00.semilogy(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{CN}_8$')
+rel_error_cn_2_of_times_analysis[0] = 1e-15
+rel_error_cn_4_of_times_analysis[0] = 1e-15
+rel_error_cn_6_of_times_analysis[0] = 1e-15
+rel_error_cn_8_of_times_analysis[0] = 1e-15
 
-ax_00.semilogy(times_analysis, rel_error_rk4_2_of_times_analysis, linewidth=linewidth_rel_error_rk4_2, linestyle=linestyle_rel_error_rk4_2, color=color_rel_error_rk4_2, label=r'$\mathrm{RK4}_2$')
-ax_00.semilogy(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=linewidth_rel_error_rk4_4, linestyle=linestyle_rel_error_rk4_4, color=color_rel_error_rk4_4, label=r'$\mathrm{RK4}_4$')
-ax_00.semilogy(times_analysis, rel_error_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=r'$\mathrm{RK4}_6$')
-ax_00.semilogy(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=r'$\mathrm{RK4}_8$')
+rel_error_rk4_2_of_times_analysis[0] = 1e-15
+rel_error_rk4_4_of_times_analysis[0] = 1e-15
+rel_error_rk4_6_of_times_analysis[0] = 1e-15
+rel_error_rk4_8_of_times_analysis[0] = 1e-15
 
-ax_00.set_xlim(0.0 * T, 1.0 * T)
-ax_00.set_ylim(1e-5, 1)
+
+ax_00.axis([0, T, 1e-6, 1])
+
+ax_00.set_yscale('log')
+
+
+ax_00.plot(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{CN}_2$')
+ax_00.plot(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{CN}_4$')
+ax_00.plot(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{CN}_6$')
+ax_00.plot(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{CN}_8$')
+
+ax_00.plot(times_analysis, rel_error_rk4_2_of_times_analysis, linewidth=linewidth_rel_error_rk4_2, linestyle=linestyle_rel_error_rk4_2, color=color_rel_error_rk4_2, label=r'$\mathrm{RK4}_2$')
+ax_00.plot(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=linewidth_rel_error_rk4_4, linestyle=linestyle_rel_error_rk4_4, color=color_rel_error_rk4_4, label=r'$\mathrm{RK4}_4$')
+ax_00.plot(times_analysis, rel_error_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=r'$\mathrm{RK4}_6$')
+ax_00.plot(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=r'$\mathrm{RK4}_8$')
+
+# ax_00.set_xlim(0.0 * T, 1.0 * T)
+# ax_00.set_ylim(1e-6, 1)
 
 ax_00.set_xticks(t_ticks_major, minor=False)
 ax_00.set_xticks(t_ticks_minor, minor=True)
 
 # ax_00.set_yticks(y_ticks_major_left_column, minor=False)
 # ax_00.set_yticks(y_ticks_minor_left_column, minor=True)
+
+
+majorLocator = FixedLocator([1e-6, 1e-4, 1e-2, 1e-0])
+# majorLocator = FixedLocator([1e-17, 1e-15, 1e-13, 1e-11, 1e-9, 1e-7, 1e-5])
+# minorLocator = FixedLocator([])
+minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
+
+
+ax_00.yaxis.set_major_locator(majorLocator)
+ax_00.yaxis.set_minor_locator(minorLocator)
+
+ax_00.yaxis.set_minor_formatter(NullFormatter())
+
+
+
 
 ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
 ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
@@ -1019,13 +1042,20 @@ ax_00.legend(loc='upper right', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-
-ax_10.axis([0, T, 1e-17, 1e-5])
-
-# ax_10.semilogy()
-# ax_10.set_yscale('log')
+ax_10.axis([0, T, 1e-16, 1e-6])
 
 ax_10.set_yscale('log')
+
+
+deviation_mass_cn_2_of_times_analysis[0] = 1e-18
+deviation_mass_cn_4_of_times_analysis[0] = 1e-18
+deviation_mass_cn_6_of_times_analysis[0] = 1e-18
+deviation_mass_cn_8_of_times_analysis[0] = 1e-18
+
+deviation_mass_rk4_2_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_4_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_6_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_8_of_times_analysis[0] = 1e-18
 
 
 ax_10.plot(times_analysis, deviation_mass_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=label_u)
@@ -1046,11 +1076,8 @@ ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
 
-
-from matplotlib.ticker import FixedLocator, NullFormatter
-
-# majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
-majorLocator = FixedLocator([1e-17, 1e-15, 1e-13, 1e-11, 1e-9, 1e-7, 1e-5])
+majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
+# majorLocator = FixedLocator([1e-17, 1e-15, 1e-13, 1e-11, 1e-9, 1e-7, 1e-5])
 # minorLocator = FixedLocator([])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
@@ -1071,6 +1098,7 @@ ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2 / \| \bm{u}(0) \|_2 \big|$')
 
 # ax_00.legend(loc='upper left', ncol=2)
 #==========================================================================================
+
 
 
 

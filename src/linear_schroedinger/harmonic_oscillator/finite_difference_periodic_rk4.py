@@ -8,7 +8,7 @@ np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 from scipy.sparse import spdiags
 
 
-from linear_schroedinger.harmonic_oscillator.reference_solutions import coherent_state
+from linear_schroedinger.harmonic_oscillator.reference_solution import coherent_state
 
 from linear_schroedinger.harmonic_oscillator.figure_1 import Figure1
 
@@ -95,7 +95,7 @@ dt = 1.0 * np.sqrt(8) / max_abs_lambda
 
 print(dt)
 
-# input('press any key to continue ... ')
+input('press any key to continue ... ')
 
 
 
