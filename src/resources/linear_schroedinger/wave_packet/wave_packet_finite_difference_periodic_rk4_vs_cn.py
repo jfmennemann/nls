@@ -28,7 +28,7 @@ x_max = +8
 
 L = x_max - x_min
 
-Jx = 250
+Jx = 200
 
 x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
@@ -40,11 +40,13 @@ dx = x[1] - x[0]
 
 T = 2
 
-# dt = 0.0025
-# dt = 0.002
+
 dt = 0.0025
 
-n_mod_times_analysis = 5
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
+
+
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -212,7 +214,7 @@ assert(n_8 % n_mod_times_analysis == 0)
 
 nr_times_analysis = 0
 
-for n in np.arange(times.size+1):
+for n in np.arange(times.size):
     
     if n % n_mod_times_analysis == 0:
         
@@ -282,50 +284,52 @@ for n in np.arange(times.size+1):
         nr_times_analysis = nr_times_analysis + 1
         
         
+        u_snapshot = u_cn_4.copy()
+        
         if n == n_0:
             
             u_ref_0 = u_ref.copy()
-            u_0 = u_cn_4.copy()
+            u_0 = u_snapshot.copy()
             
         if n == n_1:
             
             u_ref_1 = u_ref.copy()
-            u_1 = u_cn_4.copy()
+            u_1 = u_snapshot.copy()
             
         if n == n_2:
             
             u_ref_2 = u_ref.copy()
-            u_2 = u_cn_4.copy()
+            u_2 = u_snapshot.copy()
             
         if n == n_3:
             
             u_ref_3 = u_ref.copy()
-            u_3 = u_cn_4.copy()
+            u_3 = u_snapshot.copy()
             
         if n == n_4:
             
             u_ref_4 = u_ref.copy()
-            u_4 = u_cn_4.copy()
+            u_4 = u_snapshot.copy()
             
         if n == n_5:
             
             u_ref_5 = u_ref.copy()
-            u_5 = u_cn_4.copy()
+            u_5 = u_snapshot.copy()
             
         if n == n_6:
             
             u_ref_6 = u_ref.copy()
-            u_6 = u_cn_4.copy()
+            u_6 = u_snapshot.copy()
             
         if n == n_7:
             
             u_ref_7 = u_ref.copy()
-            u_7 = u_cn_4.copy()
+            u_7 = u_snapshot.copy()
             
         if n == n_8:
             
             u_ref_8 = u_ref.copy()
-            u_8 = u_cn_4.copy()
+            u_8 = u_snapshot.copy()
             
             
         
@@ -388,7 +392,11 @@ print()
 from style_sheet import mystyle
 
 import matplotlib as mpl
+
 import matplotlib.pyplot as plt
+
+from matplotlib.ticker import FixedLocator, NullFormatter
+
 
 export_pdf = True
 
@@ -988,6 +996,22 @@ ax_10 = fig_2.add_subplot(gridspec[1, 0])
 
 
 #==========================================================================================
+ax_00.axis([0, T, 1e-5, 1])
+
+ax_00.set_yscale('log')
+
+
+rel_error_cn_2_of_times_analysis[0] = 1e-6
+rel_error_cn_4_of_times_analysis[0] = 1e-6
+rel_error_cn_6_of_times_analysis[0] = 1e-6
+rel_error_cn_8_of_times_analysis[0] = 1e-6
+
+rel_error_rk4_2_of_times_analysis[0] = 1e-6
+rel_error_rk4_4_of_times_analysis[0] = 1e-6
+rel_error_rk4_6_of_times_analysis[0] = 1e-6
+rel_error_rk4_8_of_times_analysis[0] = 1e-6
+
+
 ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{CN}_2$')
 ax_00.semilogy(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{CN}_4$')
 ax_00.semilogy(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{CN}_6$')
@@ -998,19 +1022,13 @@ ax_00.semilogy(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=line
 ax_00.semilogy(times_analysis, rel_error_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=r'$\mathrm{RK4}_6$')
 ax_00.semilogy(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=r'$\mathrm{RK4}_8$')
 
-ax_00.set_xlim(0.0 * T, 1.0 * T)
-ax_00.set_ylim(1e-5, 1)
-
 ax_00.set_xticks(t_ticks_major, minor=False)
 ax_00.set_xticks(t_ticks_minor, minor=True)
 
-# ax_00.set_yticks(y_ticks_major_left_column, minor=False)
-# ax_00.set_yticks(y_ticks_minor_left_column, minor=True)
 
 ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
 ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
 
-# ax_00.set_xlabel(r'$t$')
 ax_00.set_ylabel(r'$\|\bm{u}(t) - \bm{u}_\mathrm{ref}(t) \|_2 / \| \bm{u}_\mathrm{ref}(t) \|_2$')
 
 ax_00.set_xticklabels([])
@@ -1019,13 +1037,20 @@ ax_00.legend(loc='upper right', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-
 ax_10.axis([0, T, 1e-17, 1e-5])
 
-# ax_10.semilogy()
-# ax_10.set_yscale('log')
-
 ax_10.set_yscale('log')
+
+
+deviation_mass_cn_2_of_times_analysis[0] = 1e-18
+deviation_mass_cn_4_of_times_analysis[0] = 1e-18
+deviation_mass_cn_6_of_times_analysis[0] = 1e-18
+deviation_mass_cn_8_of_times_analysis[0] = 1e-18
+
+deviation_mass_rk4_2_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_4_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_6_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_8_of_times_analysis[0] = 1e-18
 
 
 ax_10.plot(times_analysis, deviation_mass_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=label_u)
@@ -1038,8 +1063,6 @@ ax_10.plot(times_analysis, deviation_mass_rk4_4_of_times_analysis, linewidth=lin
 ax_10.plot(times_analysis, deviation_mass_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=label_u)
 ax_10.plot(times_analysis, deviation_mass_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=label_u)
 
-# ax_10.set_xlim(0.0 * T, 1.0 * T)
-# ax_10.set_ylim(1e-17, 1e-5)
 
 ax_10.set_xticks(t_ticks_major, minor=False)
 ax_10.set_xticks(t_ticks_minor, minor=True)
@@ -1047,11 +1070,7 @@ ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
 
-from matplotlib.ticker import FixedLocator, NullFormatter
-
-# majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
 majorLocator = FixedLocator([1e-17, 1e-15, 1e-13, 1e-11, 1e-9, 1e-7, 1e-5])
-# minorLocator = FixedLocator([])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
 
@@ -1068,8 +1087,6 @@ ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 
 ax_10.set_xlabel(r'$t$')
 ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2 / \| \bm{u}(0) \|_2 \big|$')
-
-# ax_00.legend(loc='upper left', ncol=2)
 #==========================================================================================
 
 

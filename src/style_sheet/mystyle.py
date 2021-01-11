@@ -3,6 +3,8 @@ from style_sheet import mycolors
 width_figure_n_colums_1 = 6
 
 
+
+
 color_u_ref = mycolors.peter_river
 # color_u_ref = mycolors.alizarin
 # color_u_ref = mycolors.turquoise
@@ -15,20 +17,25 @@ color_u     = mycolors.wet_asphalt
 
 
 
+color_V = mycolors.peter_river
+
+
 color_rel_error_cn_2 = mycolors.wet_asphalt
 color_rel_error_cn_4 = mycolors.wet_asphalt
 color_rel_error_cn_6 = mycolors.wet_asphalt
 color_rel_error_cn_8 = mycolors.wet_asphalt
 
-color_rel_error_rk4_2 = mycolors.alizarin
-color_rel_error_rk4_4 = mycolors.alizarin
-color_rel_error_rk4_6 = mycolors.alizarin
-color_rel_error_rk4_8 = mycolors.alizarin
+color_rel_error_rk4_2 = mycolors.peter_river
+color_rel_error_rk4_4 = mycolors.peter_river
+color_rel_error_rk4_6 = mycolors.peter_river
+color_rel_error_rk4_8 = mycolors.peter_river
 
 
 
 linewidth_u_ref = 1.50
 linewidth_u     = 1.25
+
+linewidth_V     = 1.00
 
 linewidth_rel_error_cn_2 = 1.25
 linewidth_rel_error_cn_4 = 1.25
@@ -44,6 +51,8 @@ linewidth_rel_error_rk4_8 = 1.25
 
 linestyle_u_ref = '-'
 linestyle_u     = '-'
+
+linestyle_V     = '--'
 
 linestyle_rel_error_cn_2 = ':'
 linestyle_rel_error_cn_4 = '-.'
