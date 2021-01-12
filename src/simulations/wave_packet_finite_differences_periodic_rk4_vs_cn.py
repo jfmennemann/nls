@@ -1086,7 +1086,7 @@ ax_10.grid(b=True, which='major', color=color_gridlines_major, linestyle=linesty
 ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
 
 ax_10.set_xlabel(r'$t$')
-ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2 / \| \bm{u}(0) \|_2 \big|$')
+ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
 #==========================================================================================
 
 

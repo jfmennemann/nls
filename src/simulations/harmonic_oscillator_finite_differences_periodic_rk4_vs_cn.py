@@ -1350,8 +1350,6 @@ ax_10.plot(times_analysis, deviation_mass_rk4_4_of_times_analysis, linewidth=lin
 ax_10.plot(times_analysis, deviation_mass_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=label_u)
 ax_10.plot(times_analysis, deviation_mass_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=label_u)
 
-# ax_10.set_xlim(0.0 * T, 1.0 * T)
-# ax_10.set_ylim(1e-17, 1e-5)
 
 ax_10.set_xticks(t_ticks_major, minor=False)
 ax_10.set_xticks(t_ticks_minor, minor=True)
@@ -1359,8 +1357,6 @@ ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
 majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
-# majorLocator = FixedLocator([1e-17, 1e-15, 1e-13, 1e-11, 1e-9, 1e-7, 1e-5])
-# minorLocator = FixedLocator([])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
 
@@ -1376,9 +1372,7 @@ ax_10.grid(b=True, which='major', color=color_gridlines_major, linestyle=linesty
 ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
 
 ax_10.set_xlabel(r'$t$')
-ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2 / \| \bm{u}(0) \|_2 \big|$')
-
-# ax_00.legend(loc='upper left', ncol=2)
+ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
 #==========================================================================================
 
 

@@ -1005,10 +1005,10 @@ rel_error_rk4_6_of_times_analysis[0] = 1e-9
 rel_error_rk4_8_of_times_analysis[0] = 1e-9
 
 
-ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{CN}_2$')
-ax_00.semilogy(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{CN}_4$')
-ax_00.semilogy(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{CN}_6$')
-ax_00.semilogy(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{CN}_8$')
+ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{REL}_2$')
+ax_00.semilogy(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{REL}_4$')
+ax_00.semilogy(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{REL}_6$')
+ax_00.semilogy(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{REL}_8$')
 
 ax_00.semilogy(times_analysis, rel_error_rk4_2_of_times_analysis, linewidth=linewidth_rel_error_rk4_2, linestyle=linestyle_rel_error_rk4_2, color=color_rel_error_rk4_2, label=r'$\mathrm{RK4}_2$')
 ax_00.semilogy(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=linewidth_rel_error_rk4_4, linestyle=linestyle_rel_error_rk4_4, color=color_rel_error_rk4_4, label=r'$\mathrm{RK4}_4$')
