@@ -1,4 +1,5 @@
-from scipy.sparse import eye, spdiags
+from scipy.sparse import eye
+from scipy.sparse import spdiags
 
 from scipy.sparse.linalg import spsolve
 
@@ -35,11 +36,10 @@ L = x_max - x_min
 
 Jx = 200
 
-x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
-
-x = x_complete[0:-1]
+x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
 dx = x[1] - x[0]
+
 
 
 
@@ -75,7 +75,7 @@ dt = 0.001
 
 
 
-T = 4
+T = 10
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -87,19 +87,30 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
-u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-u = u_ref.copy()
 
-psi_old = np.abs(u_ref)**2
+
+u = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, -v, +2, theta_0, beta)
+
+u = u[0:-1]
+
+psi_old = np.abs(u)**2
 
 assert(u.size == Jx)
 assert(psi_old.size ==Jx)
 
 
+u_complete = np.zeros_like(x, dtype=np.complex128)
+
+u_complete[0:-1] = u
+
+u_complete[-1] = u_complete[0]
 
 
-n_mod_times_analysis = 50
+
+
+
+n_mod_times_analysis = 10
 
 times_analysis = times[::n_mod_times_analysis]
 
@@ -111,9 +122,9 @@ rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-fig_1 = Figure1(x, 20, 0, None, u_ref)
+fig_1 = Figure1(x, 20, 0, None, None)
 
-fig_1.update_u(u, u_ref)
+fig_1.update_u(u_complete, u_ref=None)
    
 fig_1.redraw()
 
@@ -132,32 +143,26 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + bright_soliton(x+0*L, t, a, v, x0, theta_0, beta) 
-                + bright_soliton(x+1*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+3*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+4*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+5*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+6*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+7*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
-                )
+        u_complete[0:-1] = u
+        u_complete[-1] = u_complete[0]
+        
         
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
         
+        
+        print(norm_u_of_times_analysis[nr_times_analysis] / norm_u_of_times_analysis[0])
         
         defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
         
         
         
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
+        
         
         times_analysis[nr_times_analysis] = t 
         
         
-        fig_1.update_u(u, u_ref)
-        
+        fig_1.update_u(u_complete, u_ref=None)
+                
         fig_1.redraw()
         
         

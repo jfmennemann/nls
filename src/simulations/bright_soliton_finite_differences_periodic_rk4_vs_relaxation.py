@@ -40,13 +40,13 @@ dx = x[1] - x[0]
 
 
 
-T = 2
+T = 4
 
 
 dt = 0.001
 
-n_mod_times_analysis = 25
-# n_mod_times_analysis = 1
+# n_mod_times_analysis = 25
+n_mod_times_analysis = 1
 
 
 
@@ -64,18 +64,6 @@ D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
 D4 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
 D6 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
 D8 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
-
-A_cn_2 = E - 0.25 * 1j * dt * D2
-A_cn_4 = E - 0.25 * 1j * dt * D4
-A_cn_6 = E - 0.25 * 1j * dt * D6
-A_cn_8 = E - 0.25 * 1j * dt * D8
-
-B_cn_2 = E + 0.25 * 1j * dt * D2
-B_cn_4 = E + 0.25 * 1j * dt * D4
-B_cn_6 = E + 0.25 * 1j * dt * D6
-B_cn_8 = E + 0.25 * 1j * dt * D8
-
-
 
 
 def eval_f_rk4_2(y):
@@ -100,30 +88,27 @@ def eval_f_rk4_8(y):
 
 
 
+u_ref_0 = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-u0 = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, -v, +2, theta_0, beta)
-# u0 = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, 0, 1, theta_0, beta)
-
-
-assert(u0.size == Jx)
+assert(u_ref_0.size == Jx)
 
 
-u_cn_2 = u0.copy()
-u_cn_4 = u0.copy()
-u_cn_6 = u0.copy()
-u_cn_8 = u0.copy()
+u_cn_2 = u_ref_0.copy()
+u_cn_4 = u_ref_0.copy()
+u_cn_6 = u_ref_0.copy()
+u_cn_8 = u_ref_0.copy()
 
-psi_old_cn_2 = np.abs(u0)**2
-psi_old_cn_4 = np.abs(u0)**2
-psi_old_cn_6 = np.abs(u0)**2
-psi_old_cn_8 = np.abs(u0)**2
+psi_old_cn_2 = np.abs(u_ref_0)**2
+psi_old_cn_4 = np.abs(u_ref_0)**2
+psi_old_cn_6 = np.abs(u_ref_0)**2
+psi_old_cn_8 = np.abs(u_ref_0)**2
 
 
 
-u_rk4_2 = u0.copy()
-u_rk4_4 = u0.copy()
-u_rk4_6 = u0.copy()
-u_rk4_8 = u0.copy()
+u_rk4_2 = u_ref_0.copy()
+u_rk4_4 = u_ref_0.copy()
+u_rk4_6 = u_ref_0.copy()
+u_rk4_8 = u_ref_0.copy()
 
 
 
@@ -156,23 +141,23 @@ deviation_mass_rk4_8_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-fig_1 = Figure1(x, 20, 0, None, None)
+fig_1 = Figure1(x, 20, 0, None, u_ref_0)
 
-fig_1.update_u(u_rk4_8, None)
+fig_1.update_u(u_rk4_8, u_ref_0)
 
 fig_1.redraw()
 
 
 
 t_0 = 0
-t_1 = 0.25
-t_2 = 0.5
-t_3 = 0.75
-t_4 = 1
-t_5 = 1.25
-t_6 = 1.5
-t_7 = 1.75
-t_8 = 2
+t_1 = 0.5
+t_2 = 1.0
+t_3 = 1.5
+t_4 = 2
+t_5 = 2.5
+t_6 = 3
+t_7 = 3.5
+t_8 = 4
 
 
 indices_tmp = (np.abs(times - t_0) < 1e-14) 
@@ -251,13 +236,13 @@ for n in np.arange(times.size):
         
         
         
-        fig_1.update_u(u_cn_4, None)
+        fig_1.update_u(u_rk4_8, u_ref)
         
         fig_1.redraw()
         
         
         
-        """
+        
         rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_2-u_ref) / np.linalg.norm(u_ref)
         rel_error_cn_4_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_4-u_ref) / np.linalg.norm(u_ref)
         rel_error_cn_6_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_6-u_ref) / np.linalg.norm(u_ref)
@@ -278,7 +263,7 @@ for n in np.arange(times.size):
         deviation_mass_rk4_4_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rk4_4)/np.linalg.norm(u_ref_0))**2 )
         deviation_mass_rk4_6_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rk4_6)/np.linalg.norm(u_ref_0))**2 )
         deviation_mass_rk4_8_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rk4_8)/np.linalg.norm(u_ref_0))**2 )
-        """
+        
         
         
         
@@ -338,13 +323,6 @@ for n in np.arange(times.size):
             u_ref_8 = u_ref.copy()
             u_8 = u_snapshot.copy()
             
-            
-        
-    
-    
-    
-    
-    
     
     
     
@@ -382,7 +360,6 @@ for n in np.arange(times.size):
     
     
     #---------------------------------------------------------------------------------------------#
-    """
     k1_rk4_2 = eval_f_rk4_2(u_rk4_2)
     k2_rk4_2 = eval_f_rk4_2(u_rk4_2 + 0.5 * dt * k1_rk4_2)
     k3_rk4_2 = eval_f_rk4_2(u_rk4_2 + 0.5 * dt * k2_rk4_2)
@@ -417,7 +394,6 @@ for n in np.arange(times.size):
     k4_rk4_8 = eval_f_rk4_8(u_rk4_8 + 1.0 * dt * k3_rk4_8)
     
     u_rk4_8 = u_rk4_8 + (dt/6.0) * (k1_rk4_8 + 2*k2_rk4_8 + 2*k3_rk4_8 + k4_rk4_8)
-    """
     #---------------------------------------------------------------------------------------------#
 
 
@@ -443,7 +419,7 @@ import matplotlib as mpl
 
 import matplotlib.pyplot as plt
 
-# from matplotlib.ticker import FixedLocator, NullFormatter
+from matplotlib.ticker import FixedLocator, NullFormatter
 
 
 export_pdf = True
@@ -564,7 +540,7 @@ ylabel_81 = r'$\operatorname{Re}\, u(x,t_8)$'
 width  = 8
 height = 8
 
-name_fig_1 = "figure_bright_soliton_collision_snapshots_cn_4"
+name_fig_1 = "figure_bright_soliton_snapshots_relaxation_4"
 
 fig_1 = plt.figure(name_fig_1, figsize=(width, height), facecolor="white", constrained_layout=False)
 
@@ -993,7 +969,7 @@ ax_81.set_ylabel(ylabel_81)
 
 
 
-"""
+
 width  = 8
 height = 6
 
@@ -1009,11 +985,10 @@ gridspec = fig_2.add_gridspec(ncols=1, nrows=2, left=0.1, right=0.975, bottom=0.
 
 ax_00 = fig_2.add_subplot(gridspec[0, 0])
 ax_10 = fig_2.add_subplot(gridspec[1, 0])
-"""
+
 
 
 #==========================================================================================
-"""
 ax_00.axis([0, T, 1e-8, 1])
 
 ax_00.set_yscale('log')
@@ -1066,11 +1041,9 @@ ax_00.set_ylabel(r'$\|\bm{u}(t) - \bm{u}_\mathrm{ref}(t) \|_2 / \| \bm{u}_\mathr
 ax_00.set_xticklabels([])
 
 ax_00.legend(loc='upper right', ncol=2)
-"""
 #==========================================================================================
 
 #==========================================================================================
-"""
 ax_10.axis([0, T, 1e-13, 1e-10])
 
 ax_10.set_yscale('log')
@@ -1120,7 +1093,6 @@ ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 
 ax_10.set_xlabel(r'$t$')
 ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
-"""
 #==========================================================================================
 
 
@@ -1141,13 +1113,12 @@ if export_pdf == True:
 
     plt.savefig(filepath, backend='pgf')
     
-    """
+    
     plt.figure(name_fig_2)
     
     filepath = path + name_fig_2 + ".pdf"
 
     plt.savefig(filepath, backend='pgf')
-    """
 
 else:
 
@@ -1155,15 +1126,6 @@ else:
 
 
 
-
-
-
-
-
-
-# u_complete = np.zeros_like(x_complete, dtype=np.complex128)
-
-# u_complete[0:-1] = u
 
 
 

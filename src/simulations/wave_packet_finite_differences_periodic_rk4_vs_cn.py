@@ -43,8 +43,8 @@ T = 2
 
 dt = 0.0025
 
-n_mod_times_analysis = 25
-# n_mod_times_analysis = 1
+# n_mod_times_analysis = 25
+n_mod_times_analysis = 1
 
 
 
@@ -465,36 +465,36 @@ x_ticks_minor = np.array([-7, -6, -5, -3, -2, -1, 1, 2, 3, 5, 6, 7])
 
 t_ticks_major = np.array([0, 0.5, 1.0, 1.5, 2])
 t_ticks_minor = np.array([0.25, 0.75, 1.25, 1.75])
-          
-y_ticks_major_left_column = np.array([0, 0.5, 1.0])
-y_ticks_minor_left_column = np.array([0.25, 0.75])
 
-y_ticks_major_right_column = np.array([-1, 0, 1])
-y_ticks_minor_right_column = np.array([-0.5, 0.5])
 
 x_min = -8.5
 x_max = +8.5
 
-y_min_left_column = -0.1
-y_max_left_column = +1.1
 
-y_min_right_column = -1.2
-y_max_right_column = +1.2
+
+
+#-----------------------------------------------------------------------------#
+y_ticks_major_left_column = np.array([0, 0.5, 1.0])
+y_ticks_minor_left_column = np.array([0.25, 0.75])
+
+y_min_left_column = y_ticks_major_left_column[ 0] - 0.1 * (y_ticks_major_left_column[-1] - y_ticks_major_left_column[0])
+y_max_left_column = y_ticks_major_left_column[-1] + 0.1 * (y_ticks_major_left_column[-1] - y_ticks_major_left_column[0])
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+y_ticks_major_right_column = np.array([-1, 0, 1])
+y_ticks_minor_right_column = np.array([-0.5, 0.5])
+
+y_min_right_column = y_ticks_major_right_column[ 0] - 0.1 * (y_ticks_major_right_column[-1] - y_ticks_major_right_column[0])
+y_max_right_column = y_ticks_major_right_column[-1] + 0.1 * (y_ticks_major_right_column[-1] - y_ticks_major_right_column[0])
+#-----------------------------------------------------------------------------#
+
+
+
+
 
 
 xlabel = r'$x$'
-
-"""
-ylabel_00 = r'$|u_\mathrm{ref}(x,t_0)|^2$'
-ylabel_10 = r'$|u_\mathrm{ref}(x,t_1)|^2$'
-ylabel_20 = r'$|u_\mathrm{ref}(x,t_2)|^2$'
-ylabel_30 = r'$|u_\mathrm{ref}(x,t_3)|^2$'
-ylabel_40 = r'$|u_\mathrm{ref}(x,t_4)|^2$'
-ylabel_50 = r'$|u_\mathrm{ref}(x,t_5)|^2$'
-ylabel_60 = r'$|u_\mathrm{ref}(x,t_6)|^2$'
-ylabel_70 = r'$|u_\mathrm{ref}(x,t_7)|^2$'
-ylabel_80 = r'$|u_\mathrm{ref}(x,t_8)|^2$'
-"""
 
 ylabel_00 = r'$|u(x,t_0)|^2$'
 ylabel_10 = r'$|u(x,t_1)|^2$'
@@ -521,7 +521,7 @@ ylabel_81 = r'$\operatorname{Re}\, u(x,t_8)$'
 width  = 8
 height = 8
 
-name_fig_1 = "figure_wave_packet_snapshots_cn4"
+name_fig_1 = "figure_wave_packet_snapshots_cn_4"
 
 fig_1 = plt.figure(name_fig_1, figsize=(width, height), facecolor="white", constrained_layout=False)
 

@@ -2,9 +2,9 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from nonlinear_schroedinger.solitons.bright_soliton.reference_solution import bright_soliton
+from simulations.reference_solutions import bright_soliton
 
-from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
+from simulations.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
@@ -32,7 +32,9 @@ L = x_max - x_min
 
 Jx = 200
 
-x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+
+x = x_complete[0:-1]
 
 dx = x[1] - x[0]
 
@@ -91,7 +93,7 @@ dt = 1.0 * np.sqrt(8) / max_abs_lambda
 
 
 
-T = 25
+T = 4
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -103,17 +105,12 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
-u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
+u_ref_0 = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
 
-u = u_ref[0:-1]
+u = u_ref_0.copy()
 
 assert(u.size == Jx)
 
-u_complete = np.zeros_like(u_ref)
-
-u_complete[0:-1] = u
-
-u_complete[-1] = u_complete[0]
 
 
 
@@ -132,9 +129,9 @@ rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-fig_1 = Figure1(x, times, screen_size='large')
+fig_1 = Figure1(x, 20, 0, None, u_ref_0)
 
-fig_1.update_u(u_complete, u_ref)
+fig_1.update_u(u, u_ref_0)
    
 fig_1.redraw()
 
@@ -165,29 +162,7 @@ for n in np.arange(times.size):
                 + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
                 )
         
-        u_complete[0:-1] = u
-        u_complete[-1] = u_complete[0]
-        
-        
-        norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
-        
-        
-        print(norm_u_of_times_analysis[nr_times_analysis] / norm_u_of_times_analysis[0])
-        
-        defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
-        
-        
-        
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
-        
-        times_analysis[nr_times_analysis] = t 
-        
-        
-        fig_1.update_u(u_complete, u_ref)
-        
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
-        
-        fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
+        fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
         
