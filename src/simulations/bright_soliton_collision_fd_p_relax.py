@@ -2,9 +2,11 @@ from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
 
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
+
 
 from simulations.reference_solutions import bright_soliton
 
@@ -12,15 +14,6 @@ from simulations.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
-
-
-
-a = 4
-v = 2
-x0 = 0
-theta_0 = 0
-beta = -1
-
 
 
 
@@ -99,10 +92,13 @@ def eval_f_rk4_8(y):
 
 
 
+a = 4
+v = 2
+x0 = -2
+theta_0 = 0
+beta = -1
 
-
-u0 = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, -v, +2, theta_0, beta)
-# u0 = bright_soliton(x, 0.0, a, v, -2, theta_0, beta) + bright_soliton(x, 0.0, a, 0, 1, theta_0, beta)
+u0 = bright_soliton(x, 0, x0, theta_0, a, v, beta) + bright_soliton(x, 0, -x0, theta_0, 0.75*a, -v, beta)
 
 
 assert(u0.size == Jx)
@@ -443,7 +439,6 @@ import matplotlib as mpl
 
 import matplotlib.pyplot as plt
 
-# from matplotlib.ticker import FixedLocator, NullFormatter
 
 
 export_pdf = True
@@ -1155,15 +1150,6 @@ else:
 
 
 
-
-
-
-
-
-
-# u_complete = np.zeros_like(x_complete, dtype=np.complex128)
-
-# u_complete[0:-1] = u
 
 
 

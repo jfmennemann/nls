@@ -3,13 +3,15 @@ from scipy.sparse import spdiags
 
 from scipy.sparse.linalg import spsolve
 
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-from nonlinear_schroedinger.solitons.bright_soliton.reference_solution import bright_soliton
 
-from nonlinear_schroedinger.solitons.bright_soliton.figure_1 import Figure1
+from simulations.reference_solutions import bright_soliton
+
+from simulations.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
@@ -17,14 +19,6 @@ from differentiation import finite_differences_1d
 
 
 order_spatial_discretization = 8
-
-
-a = 4
-v = 2
-x0 = 0
-theta_0 = 0
-beta = -1
-
 
 
 
@@ -35,7 +29,9 @@ L = x_max - x_min
 
 Jx = 100
 
-x = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
+
+x = x_complete[0:-1]
 
 dx = x[1] - x[0]
 
@@ -62,19 +58,12 @@ if order_spatial_discretization == 8:
     D2 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
 
 
-
-
-
-
-
 dt = 0.001
 
 
 
 
-
-
-T = 10
+T = 4
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -84,20 +73,15 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
+a = 4
+v = 2
+x0 = 0
+theta_0 = 0
+beta = -1
 
+u_ref = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
 
-u_ref = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
-
-u = u_ref[0:-1]
-
-assert(u.size == Jx)
-
-u_complete = np.zeros_like(u_ref)
-
-u_complete[0:-1] = u
-
-u_complete[-1] = u_complete[0]
-
+u = u_ref
 
 
 
@@ -115,10 +99,10 @@ rel_error_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-fig_1 = Figure1(x, times, screen_size='large')
+fig_1 = Figure1(x, 20, 0, None, u_ref)
 
-fig_1.update_u(u_complete, u_ref)
-   
+fig_1.update_u(u, u_ref)
+
 fig_1.redraw()
 
 
@@ -137,20 +121,16 @@ for n in np.arange(times.size):
         print()
         
         u_ref = (
-                + bright_soliton(x+0*L, t, a, v, x0, theta_0, beta) 
-                + bright_soliton(x+1*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+3*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+4*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+5*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+6*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+7*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
+                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
                 )
-        
-        u_complete[0:-1] = u
-        u_complete[-1] = u_complete[0]
-        
         
         norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
         
@@ -161,16 +141,12 @@ for n in np.arange(times.size):
         
         
         
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_complete-u_ref) / np.linalg.norm(u_complete)
+        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u)
         
         times_analysis[nr_times_analysis] = t 
         
         
-        fig_1.update_u(u_complete, u_ref)
-        
-        fig_1.update_rel_error(rel_error_of_times_analysis, times_analysis, nr_times_analysis)
-        
-        fig_1.update_defect_of_mass(defect_of_mass_of_times_analysis, times_analysis, nr_times_analysis)
+        fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
         

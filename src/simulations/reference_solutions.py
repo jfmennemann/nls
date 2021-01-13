@@ -23,7 +23,7 @@ def coherent_state(x, t, x0, omega):
 
 
 
-def bright_soliton(x, t, a, v, x0, theta_0, beta):
+def bright_soliton(x, t, x0, theta_0, a, v, beta):
     
     assert(beta < 0)
     
@@ -31,7 +31,7 @@ def bright_soliton(x, t, a, v, x0, theta_0, beta):
 
 
 
-def dark_soliton(x, t, v, x0, theta_0, u0, beta, phi):
+def dark_soliton(x, t, x0, theta_0, u0, v, beta, phi):
     
     assert(beta > 0)
     assert(u0 > 0)

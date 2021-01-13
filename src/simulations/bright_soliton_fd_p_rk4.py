@@ -2,6 +2,7 @@ import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
+
 from simulations.reference_solutions import bright_soliton
 
 from simulations.figure_1 import Figure1
@@ -10,17 +11,9 @@ from simulations.figure_1 import Figure1
 from differentiation import finite_differences_1d
 
 
+
+
 order_spatial_discretization = 8
-
-
-a = 4
-v = 2
-x0 = 0
-theta_0 = 0
-beta = -1
-
-
-
 
 
 
@@ -84,8 +77,8 @@ max_abs_lambda = np.max(np.abs(eigenvalues_A_linear_part))
 
 dt = 1.0 * np.sqrt(8) / max_abs_lambda
 
-# print(dt)
-# input('press any key to continue ... ')
+print(dt)
+input('press any key to continue ... ')
 
 
 
@@ -102,15 +95,15 @@ times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
+a = 4
+v = 2
+x0 = 0
+theta_0 = 0
+beta = -1
 
+u_ref_0 = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
 
-
-u_ref_0 = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
-
-u = u_ref_0.copy()
-
-assert(u.size == Jx)
-
+u = u_ref_0
 
 
 
@@ -151,15 +144,15 @@ for n in np.arange(times.size):
         print()
         
         u_ref = (
-                + bright_soliton(x+0*L, t, a, v, x0, theta_0, beta) 
-                + bright_soliton(x+1*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+3*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+4*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+5*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+6*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+7*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
+                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
                 )
         
         fig_1.update_u(u, u_ref)

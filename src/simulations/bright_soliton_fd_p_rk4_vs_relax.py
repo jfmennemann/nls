@@ -2,9 +2,11 @@ from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
 
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
+
 
 from simulations.reference_solutions import bright_soliton
 
@@ -12,15 +14,6 @@ from simulations.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
-
-
-
-a = 4
-v = 2
-x0 = 0
-theta_0 = 0
-beta = -1
-
 
 
 
@@ -42,19 +35,17 @@ dx = x[1] - x[0]
 
 T = 4
 
-
 dt = 0.001
 
-# n_mod_times_analysis = 25
-n_mod_times_analysis = 1
+
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
 
 
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
-
-
 
 
 
@@ -86,11 +77,16 @@ def eval_f_rk4_8(y):
 
 
 
+a = 4
+v = 2
+x0 = 0
+theta_0 = 0
+beta = -1
 
+u_ref_0 = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
 
-u_ref_0 = bright_soliton(x, 0.0, a, v, x0, theta_0, beta)
+u = u_ref_0
 
-assert(u_ref_0.size == Jx)
 
 
 u_cn_2 = u_ref_0.copy()
@@ -223,15 +219,15 @@ for n in np.arange(times.size):
         print()
         
         u_ref = (
-                + bright_soliton(x+0*L, t, a, v, x0, theta_0, beta) 
-                + bright_soliton(x+1*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+2*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+3*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+4*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+5*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+6*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+7*L, t, a, v, x0, theta_0, beta)
-                + bright_soliton(x+8*L, t, a, v, x0, theta_0, beta)
+                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
+                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
+                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
                 )
         
         
