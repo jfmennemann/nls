@@ -21,7 +21,7 @@ x0 = 1
 omega = 5
 
 
-
+#------------------------------------------------------------------------------
 x_min = -3
 x_max = +3
 
@@ -34,20 +34,27 @@ x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 x = x_complete[0:-1]
 
 dx = x[1] - x[0]
+#------------------------------------------------------------------------------
 
 
-
+#------------------------------------------------------------------------------
 T = 2
 
-
 dt = 0.0025
-
-# n_mod_times_analysis = 25
-n_mod_times_analysis = 1
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
+
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
+#------------------------------------------------------------------------------
 
 
 
@@ -149,7 +156,6 @@ deviation_mass_rk4_8_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-
 fig_1 = Figure1(x, 1.5, 200, V, u_ref_0)
 
 fig_1.update_u(u_rk4_8, u_ref_0)
@@ -157,9 +163,6 @@ fig_1.update_u(u_rk4_8, u_ref_0)
 fig_1.update_V(V)
 
 fig_1.redraw()
-
-
-
 
 
 
@@ -269,8 +272,8 @@ for n in np.arange(times.size):
         
         fig_1.update_u(u_rk4_8, u_ref)
         
-        
         fig_1.redraw()
+        
         
         
         nr_times_analysis = nr_times_analysis + 1
@@ -1296,9 +1299,6 @@ ax_00.plot(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidt
 ax_00.set_xticks(t_ticks_major, minor=False)
 ax_00.set_xticks(t_ticks_minor, minor=True)
 
-# ax_00.set_yticks(y_ticks_major_left_column, minor=False)
-# ax_00.set_yticks(y_ticks_minor_left_column, minor=True)
-
 
 majorLocator = FixedLocator([1e-6, 1e-4, 1e-2, 1e-0])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
@@ -1315,7 +1315,7 @@ ax_00.yaxis.set_minor_formatter(NullFormatter())
 ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
 ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
 
-# ax_00.set_xlabel(r'$t$')
+
 ax_00.set_ylabel(r'$\|\bm{u}(t) - \bm{u}_\mathrm{ref}(t) \|_2 / \| \bm{u}_\mathrm{ref}(t) \|_2$')
 
 ax_00.set_xticklabels([])

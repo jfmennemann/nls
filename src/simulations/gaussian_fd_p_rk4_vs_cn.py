@@ -2,9 +2,11 @@ from scipy.sparse import eye
 
 from scipy.sparse.linalg import spsolve
 
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
+
 
 from simulations.reference_solutions import gaussian
 
@@ -43,16 +45,14 @@ T = 2
 
 dt = 0.0025
 
-# n_mod_times_analysis = 25
-n_mod_times_analysis = 1
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
 
 
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
-
-
 
 
 
@@ -82,10 +82,7 @@ A_rk4_8 = 1j * 0.5 * D8
 
 
 
-
-
-
-u_ref_0 = gaussian(x, 0.0, x0, sigma_0, k0)
+u_ref_0 = gaussian(x, 0.0, x0, k0, sigma_0)
 
 u_cn_2 = u_ref_0.copy()
 u_cn_4 = u_ref_0.copy()
@@ -107,11 +104,6 @@ assert(u_rk4_2.size == Jx)
 assert(u_rk4_4.size == Jx)
 assert(u_rk4_6.size == Jx)
 assert(u_rk4_8.size == Jx)
-
-
-
-
-
 
 
 
@@ -225,27 +217,27 @@ for n in np.arange(times.size):
         print()
         
         u_ref = (
-                + gaussian(x - 10*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  9*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  8*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  7*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  6*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  5*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  4*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  3*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  2*L, t, x0, sigma_0, k0) 
-                + gaussian(x -  1*L, t, x0, sigma_0, k0)
-                + gaussian(x +  0*L, t, x0, sigma_0, k0)
-                + gaussian(x +  1*L, t, x0, sigma_0, k0)
-                + gaussian(x +  2*L, t, x0, sigma_0, k0)
-                + gaussian(x +  3*L, t, x0, sigma_0, k0)
-                + gaussian(x +  4*L, t, x0, sigma_0, k0)
-                + gaussian(x +  5*L, t, x0, sigma_0, k0)
-                + gaussian(x +  6*L, t, x0, sigma_0, k0)
-                + gaussian(x +  7*L, t, x0, sigma_0, k0)
-                + gaussian(x +  8*L, t, x0, sigma_0, k0)
-                + gaussian(x +  9*L, t, x0, sigma_0, k0)
-                + gaussian(x + 10*L, t, x0, sigma_0, k0)
+                + gaussian(x - 10*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  9*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  8*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  7*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  6*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  5*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  4*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  3*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  2*L, t, x0, k0, sigma_0) 
+                + gaussian(x -  1*L, t, x0, k0, sigma_0)
+                + gaussian(x +  0*L, t, x0, k0, sigma_0)
+                + gaussian(x +  1*L, t, x0, k0, sigma_0)
+                + gaussian(x +  2*L, t, x0, k0, sigma_0)
+                + gaussian(x +  3*L, t, x0, k0, sigma_0)
+                + gaussian(x +  4*L, t, x0, k0, sigma_0)
+                + gaussian(x +  5*L, t, x0, k0, sigma_0)
+                + gaussian(x +  6*L, t, x0, k0, sigma_0)
+                + gaussian(x +  7*L, t, x0, k0, sigma_0)
+                + gaussian(x +  8*L, t, x0, k0, sigma_0)
+                + gaussian(x +  9*L, t, x0, k0, sigma_0)
+                + gaussian(x + 10*L, t, x0, k0, sigma_0)
                 )
         
         rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_2-u_ref) / np.linalg.norm(u_ref)
@@ -374,18 +366,6 @@ for n in np.arange(times.size):
 
 
 
-print()
-print(t_0)
-print(t_1)
-print(t_2)
-print(t_3)
-print()
-
-
-
-
-
-
 
 
 
@@ -491,9 +471,6 @@ y_max_right_column = y_ticks_major_right_column[-1] + 0.1 * (y_ticks_major_right
 
 
 
-
-
-
 xlabel = r'$x$'
 
 ylabel_00 = r'$|u(x,t_0)|^2$'
@@ -555,11 +532,6 @@ ax_81 = fig_1.add_subplot(gridspec[8, 1])
 #==========================================================================================
 
 #==========================================================================================
-# ax_00.plot(x, np.abs(u_ref_0)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-
-print(x.size)
-print(u_0.size)
-
 ax_00.plot(x, np.abs(u_0)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_00.set_xlim(x_min, x_max)
@@ -577,13 +549,10 @@ ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_00.set_ylabel(ylabel_00)
 
 ax_00.set_xticklabels([])
-
-# ax_00.legend(loc='upper left', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-# ax_10.plot(x, np.abs(u_ref_1)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_10.plot(x, np.abs(u_1)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_10.plot(x, np.abs(u_1)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_10.set_xlim(x_min, x_max)
 ax_10.set_ylim(y_min_left_column, y_max_left_column)
@@ -604,8 +573,7 @@ ax_10.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_20.plot(x, np.abs(u_ref_2)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_20.plot(x, np.abs(u_2)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_20.plot(x, np.abs(u_2)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_20.set_xlim(x_min, x_max)
 ax_20.set_ylim(y_min_left_column, y_max_left_column)
@@ -626,8 +594,7 @@ ax_20.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_30.plot(x, np.abs(u_ref_3)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_30.plot(x, np.abs(u_3)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_30.plot(x, np.abs(u_3)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_30.set_xlim(x_min, x_max)
 ax_30.set_ylim(y_min_left_column, y_max_left_column)
@@ -648,8 +615,7 @@ ax_30.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_40.plot(x, np.abs(u_ref_4)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_40.plot(x, np.abs(u_4)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_40.plot(x, np.abs(u_4)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_40.set_xlim(x_min, x_max)
 ax_40.set_ylim(y_min_left_column, y_max_left_column)
@@ -670,8 +636,7 @@ ax_40.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_50.plot(x, np.abs(u_ref_5)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_50.plot(x, np.abs(u_5)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_50.plot(x, np.abs(u_5)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_50.set_xlim(x_min, x_max)
 ax_50.set_ylim(y_min_left_column, y_max_left_column)
@@ -692,8 +657,7 @@ ax_50.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_60.plot(x, np.abs(u_ref_6)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_60.plot(x, np.abs(u_6)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_60.plot(x, np.abs(u_6)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_60.set_xlim(x_min, x_max)
 ax_60.set_ylim(y_min_left_column, y_max_left_column)
@@ -714,8 +678,7 @@ ax_60.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_70.plot(x, np.abs(u_ref_7)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_70.plot(x, np.abs(u_7)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_70.plot(x, np.abs(u_7)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_70.set_xlim(x_min, x_max)
 ax_70.set_ylim(y_min_left_column, y_max_left_column)
@@ -737,8 +700,7 @@ ax_70.set_xticklabels([])
 
 
 #==========================================================================================
-# ax_80.plot(x, np.abs(u_ref_8)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_80.plot(x, np.abs(u_8)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_80.plot(x, np.abs(u_8)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_80.set_xlim(x_min, x_max)
 ax_80.set_ylim(y_min_left_column, y_max_left_column)
@@ -763,8 +725,7 @@ ax_80.set_ylabel(ylabel_80)
 
 
 #==========================================================================================
-# ax_01.plot(x, np.abs(u_ref_0)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_01.plot(x, np.real(u_0), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_01.plot(x, np.real(u_0), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_01.set_xlim(x_min, x_max)
 ax_01.set_ylim(y_min_right_column, y_max_right_column)
@@ -781,13 +742,10 @@ ax_01.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_01.set_ylabel(ylabel_01)
 
 ax_01.set_xticklabels([])
-
-# ax_01.legend(loc='upper left', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-# ax_11.plot(x, np.abs(u_ref_1)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_11.plot(x, np.real(u_1), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_11.plot(x, np.real(u_1), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_11.set_xlim(x_min, x_max)
 ax_11.set_ylim(y_min_right_column, y_max_right_column)
@@ -808,8 +766,7 @@ ax_11.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_21.plot(x, np.abs(u_ref_2)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_21.plot(x, np.real(u_2), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_21.plot(x, np.real(u_2), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_21.set_xlim(x_min, x_max)
 ax_21.set_ylim(y_min_right_column, y_max_right_column)
@@ -830,8 +787,7 @@ ax_21.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_31.plot(x, np.abs(u_ref_3)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_31.plot(x, np.real(u_3), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_31.plot(x, np.real(u_3), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_31.set_xlim(x_min, x_max)
 ax_31.set_ylim(y_min_right_column, y_max_right_column)
@@ -852,8 +808,7 @@ ax_31.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_41.plot(x, np.abs(u_ref_4)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_41.plot(x, np.real(u_4), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_41.plot(x, np.real(u_4), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_41.set_xlim(x_min, x_max)
 ax_41.set_ylim(y_min_right_column, y_max_right_column)
@@ -874,8 +829,7 @@ ax_41.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_51.plot(x, np.abs(u_ref_5)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_51.plot(x, np.real(u_5), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_51.plot(x, np.real(u_5), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_51.set_xlim(x_min, x_max)
 ax_51.set_ylim(y_min_right_column, y_max_right_column)
@@ -896,8 +850,7 @@ ax_51.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_61.plot(x, np.abs(u_ref_6)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_61.plot(x, np.real(u_6), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_61.plot(x, np.real(u_6), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_61.set_xlim(x_min, x_max)
 ax_61.set_ylim(y_min_right_column, y_max_right_column)
@@ -918,8 +871,7 @@ ax_61.set_xticklabels([])
 #==========================================================================================
 
 #==========================================================================================
-# ax_71.plot(x, np.abs(u_ref_7)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_71.plot(x, np.real(u_7), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_71.plot(x, np.real(u_7), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_71.set_xlim(x_min, x_max)
 ax_71.set_ylim(y_min_right_column, y_max_right_column)
@@ -941,8 +893,7 @@ ax_71.set_xticklabels([])
 
 
 #==========================================================================================
-# ax_81.plot(x, np.abs(u_ref_8)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
-ax_81.plot(x, np.real(u_8), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
+ax_81.plot(x, np.real(u_8), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
 
 ax_81.set_xlim(x_min, x_max)
 ax_81.set_ylim(y_min_right_column, y_max_right_column)
@@ -960,18 +911,6 @@ ax_81.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_81.set_xlabel(xlabel)
 ax_81.set_ylabel(ylabel_81)
 #==========================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1117,18 +1056,6 @@ if export_pdf == True:
 else:
 
     plt.show()
-
-
-
-
-
-
-
-
-
-# u_complete = np.zeros_like(x_complete, dtype=np.complex128)
-
-# u_complete[0:-1] = u
 
 
 
