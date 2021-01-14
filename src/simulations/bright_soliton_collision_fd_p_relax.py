@@ -1,3 +1,12 @@
+"""
+Equation: cubic nonlinear Schroedinger equation
+Initial condition: two bright solitons
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: relaxation method
+"""
+
+
 from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
@@ -33,19 +42,25 @@ dx = x[1] - x[0]
 
 
 
+
+#------------------------------------------------------------------------------
 T = 2
 
-
 dt = 0.001
+
+n_times = np.int(np.round(T / dt)) + 1
+        
+times = np.linspace(0, T, n_times, endpoint=True)
+
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
 
 n_mod_times_analysis = 25
 # n_mod_times_analysis = 1
 
 
-
-n_times = np.int(np.round(T / dt)) + 1
-        
-times = np.linspace(0, T, n_times, endpoint=True)
 
 
 
@@ -98,7 +113,7 @@ x0 = -2
 theta_0 = 0
 beta = -1
 
-u0 = bright_soliton(x, 0, x0, theta_0, a, v, beta) + bright_soliton(x, 0, -x0, theta_0, 0.75*a, -v, beta)
+u0 = bright_soliton(x, 0, x0, theta_0, a, v, beta) + bright_soliton(x, 0, -x0, theta_0, 0.85*a, -v, beta)
 
 
 assert(u0.size == Jx)

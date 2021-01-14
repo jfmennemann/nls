@@ -1,3 +1,13 @@
+"""
+Equation: free Schroedinger equation
+Initial condition: Gaussian wave packet
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: explicit Euler
+"""
+
+
+
 from scipy.sparse import eye
 
 
@@ -43,6 +53,7 @@ u = u_ref
 
 
 
+#------------------------------------------------------------------------------
 T = 4
 
 dt = 0.001
@@ -51,6 +62,13 @@ n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
 
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
 
 
 

@@ -10,7 +10,6 @@ def get_D2_dirichlet_2nd_order(Jx, dx):
     return D2
 
 
-
 def get_D2_circulant_2nd_order(Jx, dx):
   
     D2 = diags([1, 1, -2, 1, 1], [-(Jx-1), -1, 0, 1, (Jx-1)], shape=(Jx, Jx))
@@ -45,21 +44,6 @@ def get_D2_circulant_8th_order(Jx, dx):
     D2 = D2 / (5040 * dx**2)
     
     return D2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,3 +1,13 @@
+"""
+Equation: cubic nonlinear Schroedinger equation
+Initial condition: bright soliton
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: RK4
+"""
+
+
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
@@ -74,23 +84,32 @@ max_abs_lambda = np.max(np.abs(eigenvalues_A_linear_part))
 
 
 
+dt_max = 1.0 * np.sqrt(8) / max_abs_lambda
 
-dt = 1.0 * np.sqrt(8) / max_abs_lambda
 
-print(dt)
+print('dt_max: {0:f}'.format(dt_max))
+
 input('press any key to continue ... ')
 
 
 
 
-
-
-
+#------------------------------------------------------------------------------
 T = 4
+
+dt = 0.001
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
+
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+n_mod_times_analysis = 25
+
 
 
 
@@ -110,18 +129,6 @@ u = u_ref_0
 
 
 
-n_mod_times_analysis = 50
-
-times_analysis = times[::n_mod_times_analysis]
-
-
-
-norm_u_of_times_analysis = np.zeros_like(times_analysis)
-rel_error_of_times_analysis = np.zeros_like(times_analysis)
-
-
-
-
 fig_1 = Figure1(x, 20, 0, None, u_ref_0)
 
 fig_1.update_u(u, u_ref_0)
@@ -130,8 +137,6 @@ fig_1.redraw()
 
 
 
-
-nr_times_analysis = 0
 
 for n in np.arange(times.size):
     
@@ -158,10 +163,6 @@ for n in np.arange(times.size):
         fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
-        
-        
-        nr_times_analysis = nr_times_analysis + 1
-    
     
     k1 = eval_f(u)
     k2 = eval_f(u + 0.5 * dt * k1)

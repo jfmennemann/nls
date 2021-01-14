@@ -1,14 +1,21 @@
+"""
+Equation: linear Schroedinger equation
+Initial condition: coherent state
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: Crank-Nicolson and RK4
+"""
+
+
 from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
-
 
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
-
-from simulations.reference_solutions import bright_soliton
+from simulations.reference_solutions import coherent_state
 
 from simulations.figure_1 import Figure1
 
@@ -18,38 +25,58 @@ from differentiation import finite_differences_1d
 
 
 
-x_min = -4
-x_max = +4
+x0 = 1
+
+omega = 5
+
+
+#------------------------------------------------------------------------------
+x_min = -3
+x_max = +3
 
 L = x_max - x_min
 
-Jx = 200
+Jx = 100
 
 x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
 x = x_complete[0:-1]
 
 dx = x[1] - x[0]
+#------------------------------------------------------------------------------
 
 
+#------------------------------------------------------------------------------
+T = 2
 
-T = 4
-
-dt = 0.001
-
-
-n_mod_times_analysis = 25
-# n_mod_times_analysis = 1
-
-
+dt = 0.0025
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
 
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
+
+times_analysis = times[::n_mod_times_analysis]
+#------------------------------------------------------------------------------
+
+
+
 
 
 E = eye(Jx)
+
+V = 0.5 * omega**2 * x**2
+
+diag_V = spdiags(np.array([V]), np.array([0]), Jx, Jx, 'csr')
+
 
 D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
 D4 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
@@ -57,49 +84,36 @@ D6 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
 D8 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
 
 
-def eval_f_rk4_2(y):
-    
-    return 0.5 * 1j * D2 * y - 1j * beta * np.abs(y)**2 * y
-
-def eval_f_rk4_4(y):
-    
-    return 0.5 * 1j * D4 * y - 1j * beta * np.abs(y)**2 * y
-
-def eval_f_rk4_6(y):
-    
-    return 0.5 * 1j * D6 * y - 1j * beta * np.abs(y)**2 * y
-
-def eval_f_rk4_8(y):
-    
-    return 0.5 * 1j * D8 * y - 1j * beta * np.abs(y)**2 * y
 
 
+A_cn_2 = E - 0.25 * 1j * dt * D2 + 0.5 * dt * 1j * diag_V
+A_cn_4 = E - 0.25 * 1j * dt * D4 + 0.5 * dt * 1j * diag_V
+A_cn_6 = E - 0.25 * 1j * dt * D6 + 0.5 * dt * 1j * diag_V
+A_cn_8 = E - 0.25 * 1j * dt * D8 + 0.5 * dt * 1j * diag_V
+
+B_cn_2 = E + 0.25 * 1j * dt * D2 - 0.5 * dt * 1j * diag_V
+B_cn_4 = E + 0.25 * 1j * dt * D4 - 0.5 * dt * 1j * diag_V
+B_cn_6 = E + 0.25 * 1j * dt * D6 - 0.5 * dt * 1j * diag_V
+B_cn_8 = E + 0.25 * 1j * dt * D8 - 0.5 * dt * 1j * diag_V
+
+
+A_rk4_2 = 1j * (0.5 * D2 - diag_V)
+A_rk4_4 = 1j * (0.5 * D4 - diag_V)
+A_rk4_6 = 1j * (0.5 * D6 - diag_V)
+A_rk4_8 = 1j * (0.5 * D8 - diag_V)
 
 
 
-a = 4
-v = 2
-x0 = 0
-theta_0 = 0
-beta = -1
-
-u_ref_0 = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
-
-u = u_ref_0
 
 
+
+
+u_ref_0 = coherent_state(x, 0.0, x0, omega)
 
 u_cn_2 = u_ref_0.copy()
 u_cn_4 = u_ref_0.copy()
 u_cn_6 = u_ref_0.copy()
 u_cn_8 = u_ref_0.copy()
-
-psi_old_cn_2 = np.abs(u_ref_0)**2
-psi_old_cn_4 = np.abs(u_ref_0)**2
-psi_old_cn_6 = np.abs(u_ref_0)**2
-psi_old_cn_8 = np.abs(u_ref_0)**2
-
-
 
 u_rk4_2 = u_ref_0.copy()
 u_rk4_4 = u_ref_0.copy()
@@ -107,9 +121,18 @@ u_rk4_6 = u_ref_0.copy()
 u_rk4_8 = u_ref_0.copy()
 
 
+assert(u_cn_2.size == Jx)
+assert(u_cn_4.size == Jx)
+assert(u_cn_6.size == Jx)
+assert(u_cn_8.size == Jx)
+
+assert(u_rk4_2.size == Jx)
+assert(u_rk4_4.size == Jx)
+assert(u_rk4_6.size == Jx)
+assert(u_rk4_8.size == Jx)
 
 
-times_analysis = times[::n_mod_times_analysis]
+
 
 
 rel_error_cn_2_of_times_analysis = np.zeros_like(times_analysis)
@@ -136,24 +159,26 @@ deviation_mass_rk4_8_of_times_analysis = np.zeros_like(times_analysis)
 
 
 
-
-fig_1 = Figure1(x, 20, 0, None, u_ref_0)
+fig_1 = Figure1(x, 1.5, 200, V, u_ref_0)
 
 fig_1.update_u(u_rk4_8, u_ref_0)
+
+fig_1.update_V(V)
 
 fig_1.redraw()
 
 
 
+
 t_0 = 0
-t_1 = 0.5
-t_2 = 1.0
-t_3 = 1.5
-t_4 = 2
-t_5 = 2.5
-t_6 = 3
-t_7 = 3.5
-t_8 = 4
+t_1 = 0.25
+t_2 = 0.5
+t_3 = 0.75
+t_4 = 1.0
+t_5 = 1.25
+t_6 = 1.5
+t_7 = 1.75
+t_8 = 2.0
 
 
 indices_tmp = (np.abs(times - t_0) < 1e-14) 
@@ -218,25 +243,7 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
-                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
-                )
-        
-        
-        
-        fig_1.update_u(u_rk4_8, u_ref)
-        
-        fig_1.redraw()
-        
-        
+        u_ref = coherent_state(x, t, x0, omega)
         
         
         rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_2-u_ref) / np.linalg.norm(u_ref)
@@ -266,6 +273,9 @@ for n in np.arange(times.size):
         times_analysis[nr_times_analysis] = t 
         
         
+        fig_1.update_u(u_rk4_8, u_ref)
+        
+        fig_1.redraw()
         
         
         
@@ -319,78 +329,46 @@ for n in np.arange(times.size):
             u_ref_8 = u_ref.copy()
             u_8 = u_snapshot.copy()
             
+            
+        
+    
+    u_cn_2 = spsolve(A_cn_2, B_cn_2 * u_cn_2)
+    u_cn_4 = spsolve(A_cn_4, B_cn_4 * u_cn_4)
+    u_cn_6 = spsolve(A_cn_6, B_cn_6 * u_cn_6)
+    u_cn_8 = spsolve(A_cn_8, B_cn_8 * u_cn_8)
     
     
-    
-    #---------------------------------------------------------------------------------------------#
-    psi_new_cn_2 = 2 * np.abs(u_cn_2)**2 - psi_old_cn_2
-    psi_new_cn_4 = 2 * np.abs(u_cn_4)**2 - psi_old_cn_4
-    psi_new_cn_6 = 2 * np.abs(u_cn_6)**2 - psi_old_cn_6
-    psi_new_cn_8 = 2 * np.abs(u_cn_8)**2 - psi_old_cn_8
-    
-    b_cn_2 = u_cn_2 + 0.25 * 1j * dt * D2 * u_cn_2 - 0.5 * 1j * dt * beta * psi_new_cn_2 * u_cn_2
-    b_cn_4 = u_cn_4 + 0.25 * 1j * dt * D4 * u_cn_4 - 0.5 * 1j * dt * beta * psi_new_cn_4 * u_cn_4
-    b_cn_6 = u_cn_6 + 0.25 * 1j * dt * D6 * u_cn_6 - 0.5 * 1j * dt * beta * psi_new_cn_6 * u_cn_6
-    b_cn_8 = u_cn_8 + 0.25 * 1j * dt * D8 * u_cn_8 - 0.5 * 1j * dt * beta * psi_new_cn_8 * u_cn_8
-    
-    A_cn_2 = eye(Jx) - 0.25 * 1j * dt * D2 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_2, 0, Jx, Jx)
-    A_cn_4 = eye(Jx) - 0.25 * 1j * dt * D4 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_4, 0, Jx, Jx)
-    A_cn_6 = eye(Jx) - 0.25 * 1j * dt * D6 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_6, 0, Jx, Jx)
-    A_cn_8 = eye(Jx) - 0.25 * 1j * dt * D8 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_8, 0, Jx, Jx)
-    
-    u_cn_2 = spsolve(A_cn_2, b_cn_2)
-    u_cn_4 = spsolve(A_cn_4, b_cn_4)
-    u_cn_6 = spsolve(A_cn_6, b_cn_6)
-    u_cn_8 = spsolve(A_cn_8, b_cn_8)
-    
-    psi_old_cn_2 = psi_new_cn_2
-    psi_old_cn_4 = psi_new_cn_4
-    psi_old_cn_6 = psi_new_cn_6
-    psi_old_cn_8 = psi_new_cn_8
-    #---------------------------------------------------------------------------------------------#
-    
-    
-    
-    
-    
-    
-    
-    #---------------------------------------------------------------------------------------------#
-    k1_rk4_2 = eval_f_rk4_2(u_rk4_2)
-    k2_rk4_2 = eval_f_rk4_2(u_rk4_2 + 0.5 * dt * k1_rk4_2)
-    k3_rk4_2 = eval_f_rk4_2(u_rk4_2 + 0.5 * dt * k2_rk4_2)
-    k4_rk4_2 = eval_f_rk4_2(u_rk4_2 + 1.0 * dt * k3_rk4_2)
+    k1_rk4_2 = A_rk4_2 * (u_rk4_2                      )
+    k2_rk4_2 = A_rk4_2 * (u_rk4_2 + 0.5 * dt * k1_rk4_2)
+    k3_rk4_2 = A_rk4_2 * (u_rk4_2 + 0.5 * dt * k2_rk4_2)
+    k4_rk4_2 = A_rk4_2 * (u_rk4_2 + 1.0 * dt * k3_rk4_2)
     
     u_rk4_2 = u_rk4_2 + (dt/6.0) * (k1_rk4_2 + 2*k2_rk4_2 + 2*k3_rk4_2 + k4_rk4_2)
     
     
-    
-    k1_rk4_4 = eval_f_rk4_4(u_rk4_4)
-    k2_rk4_4 = eval_f_rk4_4(u_rk4_4 + 0.5 * dt * k1_rk4_4)
-    k3_rk4_4 = eval_f_rk4_4(u_rk4_4 + 0.5 * dt * k2_rk4_4)
-    k4_rk4_4 = eval_f_rk4_4(u_rk4_4 + 1.0 * dt * k3_rk4_4)
+    k1_rk4_4 = A_rk4_4 * (u_rk4_4                      )
+    k2_rk4_4 = A_rk4_4 * (u_rk4_4 + 0.5 * dt * k1_rk4_4)
+    k3_rk4_4 = A_rk4_4 * (u_rk4_4 + 0.5 * dt * k2_rk4_4)
+    k4_rk4_4 = A_rk4_4 * (u_rk4_4 + 1.0 * dt * k3_rk4_4)
     
     u_rk4_4 = u_rk4_4 + (dt/6.0) * (k1_rk4_4 + 2*k2_rk4_4 + 2*k3_rk4_4 + k4_rk4_4)
     
     
-    
-    k1_rk4_6 = eval_f_rk4_6(u_rk4_6)
-    k2_rk4_6 = eval_f_rk4_6(u_rk4_6 + 0.5 * dt * k1_rk4_6)
-    k3_rk4_6 = eval_f_rk4_6(u_rk4_6 + 0.5 * dt * k2_rk4_6)
-    k4_rk4_6 = eval_f_rk4_6(u_rk4_6 + 1.0 * dt * k3_rk4_6)
+    k1_rk4_6 = A_rk4_6 * (u_rk4_6                      )
+    k2_rk4_6 = A_rk4_6 * (u_rk4_6 + 0.5 * dt * k1_rk4_6)
+    k3_rk4_6 = A_rk4_6 * (u_rk4_6 + 0.5 * dt * k2_rk4_6)
+    k4_rk4_6 = A_rk4_6 * (u_rk4_6 + 1.0 * dt * k3_rk4_6)
     
     u_rk4_6 = u_rk4_6 + (dt/6.0) * (k1_rk4_6 + 2*k2_rk4_6 + 2*k3_rk4_6 + k4_rk4_6)
     
     
-    
-    
-    k1_rk4_8 = eval_f_rk4_8(u_rk4_8)
-    k2_rk4_8 = eval_f_rk4_8(u_rk4_8 + 0.5 * dt * k1_rk4_8)
-    k3_rk4_8 = eval_f_rk4_8(u_rk4_8 + 0.5 * dt * k2_rk4_8)
-    k4_rk4_8 = eval_f_rk4_8(u_rk4_8 + 1.0 * dt * k3_rk4_8)
+    k1_rk4_8 = A_rk4_8 * (u_rk4_8                      )
+    k2_rk4_8 = A_rk4_8 * (u_rk4_8 + 0.5 * dt * k1_rk4_8)
+    k3_rk4_8 = A_rk4_8 * (u_rk4_8 + 0.5 * dt * k2_rk4_8)
+    k4_rk4_8 = A_rk4_8 * (u_rk4_8 + 1.0 * dt * k3_rk4_8)
     
     u_rk4_8 = u_rk4_8 + (dt/6.0) * (k1_rk4_8 + 2*k2_rk4_8 + 2*k3_rk4_8 + k4_rk4_8)
-    #---------------------------------------------------------------------------------------------#
+    
 
 
 
@@ -431,8 +409,12 @@ if export_pdf == True:
 linestyle_u_ref = mystyle.linestyle_u_ref
 linestyle_u     = mystyle.linestyle_u
 
+linestyle_V     = mystyle.linestyle_V
+
 linewidth_u_ref = mystyle.linewidth_u_ref
 linewidth_u     = mystyle.linewidth_u
+
+linewidth_V     = mystyle.linewidth_V
 
 linewidth_rel_error_cn_2 = mystyle.linewidth_rel_error_cn_2
 linewidth_rel_error_cn_4 = mystyle.linewidth_rel_error_cn_4
@@ -458,6 +440,8 @@ linestyle_rel_error_rk4_8 = mystyle.linestyle_rel_error_rk4_8
 color_u_ref = mystyle.color_u_ref
 color_u     = mystyle.color_u
 
+color_V     = mystyle.color_V
+
 color_rel_error_cn_2 = mystyle.color_rel_error_cn_2
 color_rel_error_cn_4 = mystyle.color_rel_error_cn_4
 color_rel_error_cn_6 = mystyle.color_rel_error_cn_6
@@ -471,6 +455,9 @@ color_rel_error_rk4_8 = mystyle.color_rel_error_rk4_8
 label_u_ref = r'$u_\mathrm{ref}$'
 label_u     = r'$u$'
 
+label_V     = r'$V$'
+
+
 color_gridlines_major = mystyle.color_gridlines_major
 color_gridlines_minor = mystyle.color_gridlines_minor
 
@@ -480,31 +467,47 @@ linestyle_gridlines_minor = mystyle.linestyle_gridlines_minor
 linewidth_gridlines_major = mystyle.linewidth_gridlines_major
 linewidth_gridlines_minor = mystyle.linewidth_gridlines_minor
 
-x_min = -4.25
-x_max = +4.25
+x_ticks_major = np.array([-3, -2, -1, 0, 1, 2, 3])
+x_ticks_minor = np.array([-2.5, -1.5, -0.5, 0.5, 1.5, 2.5])
 
-x_ticks_major = np.array([-4, -2, 0, 2, 4])
-x_ticks_minor = np.array([-3.5, -3, -2.5, -1.5, -1, -0.5, 0.5, 1, 1.5, 2.5, 3, 3.5])
-
-t_ticks_major = np.array([0, 0.5, 1.0, 1.5, 2, 2.5, 3, 3.5, 4])
-t_ticks_minor = np.array([0.25, 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75])
+t_ticks_major = np.array([0, 0.5, 1.0, 1.5, 2])
+t_ticks_minor = np.array([0.25, 0.75, 1.25, 1.75])
 
 
 
+x_min = -3.25
+x_max = +3.25
 
-          
-y_ticks_major_left_column = np.array([0, 10, 20])
-y_ticks_minor_left_column = np.array([5, 15])
+#-----------------------------------------------------------------------------#
+y_ticks_major_left_column = np.array([0, 0.5, 1.0, 1.5])
+y_ticks_minor_left_column = np.array([0.25, 0.75, 1.25])
 
-y_ticks_major_right_column = np.array([-8, 0, 8])
-y_ticks_minor_right_column = np.array([-4, 4])
-
+y_ticks_major_left_column_2nd = np.array([0, 50, 100, 150])
+y_ticks_minor_left_column_2nd = np.array([25, 75, 125])
 
 y_min_left_column = y_ticks_major_left_column[ 0] - 0.1 * (y_ticks_major_left_column[-1] - y_ticks_major_left_column[0])
 y_max_left_column = y_ticks_major_left_column[-1] + 0.1 * (y_ticks_major_left_column[-1] - y_ticks_major_left_column[0])
 
+y_min_left_column_2nd = y_ticks_major_left_column_2nd[ 0] - 0.1 * (y_ticks_major_left_column_2nd[-1] - y_ticks_major_left_column_2nd[0])
+y_max_left_column_2nd = y_ticks_major_left_column_2nd[-1] + 0.1 * (y_ticks_major_left_column_2nd[-1] - y_ticks_major_left_column_2nd[0])
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+y_ticks_major_right_column = np.array([-1.5, 0, 1.5])
+y_ticks_minor_right_column = np.array([-1, -0.5, 0.5, 1])
+
+y_ticks_major_right_column_2nd = np.array([0, 75, 150])
+y_ticks_minor_right_column_2nd = np.array([25, 50, 100, 125])
+
 y_min_right_column = y_ticks_major_right_column[ 0] - 0.1 * (y_ticks_major_right_column[-1] - y_ticks_major_right_column[0])
 y_max_right_column = y_ticks_major_right_column[-1] + 0.1 * (y_ticks_major_right_column[-1] - y_ticks_major_right_column[0])
+
+y_min_right_column_2nd = y_ticks_major_right_column_2nd[ 0] - 0.1 * (y_ticks_major_right_column_2nd[-1] - y_ticks_major_right_column_2nd[0])
+y_max_right_column_2nd = y_ticks_major_right_column_2nd[-1] + 0.1 * (y_ticks_major_right_column_2nd[-1] - y_ticks_major_right_column_2nd[0])
+#-----------------------------------------------------------------------------#
+
+
+
 
 
 
@@ -536,14 +539,14 @@ ylabel_81 = r'$\operatorname{Re}\, u(x,t_8)$'
 width  = 8
 height = 8
 
-name_fig_1 = "figure_bright_soliton_snapshots_relaxation_4"
+name_fig_1 = "figure_coherent_state_snapshots_cn_4"
 
 fig_1 = plt.figure(name_fig_1, figsize=(width, height), facecolor="white", constrained_layout=False)
 
-spacing_x = 0.2
+spacing_x = 0.45
 spacing_y = 0.1
 
-gridspec = fig_1.add_gridspec(ncols=2, nrows=9, left=0.065, right=0.99, bottom=0.05, top=0.99, wspace=spacing_x, hspace=spacing_y)
+gridspec = fig_1.add_gridspec(ncols=2, nrows=9, left=0.065, right=0.925, bottom=0.05, top=0.99, wspace=spacing_x, hspace=spacing_y)
 
 
 
@@ -587,6 +590,22 @@ ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_00.set_ylabel(ylabel_00)
 
 ax_00.set_xticklabels([])
+
+
+
+ax_V = ax_00.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
@@ -608,10 +627,25 @@ ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_10.set_ylabel(ylabel_10)
     
 ax_10.set_xticklabels([])
+
+
+ax_V = ax_10.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_20.plot(x, np.abs(u_2)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_20.plot(x, np.abs(u_2)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_20.set_xlim(x_min, x_max)
 ax_20.set_ylim(y_min_left_column, y_max_left_column)
@@ -629,10 +663,26 @@ ax_20.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_20.set_ylabel(ylabel_20)
     
 ax_20.set_xticklabels([])
+
+
+
+ax_V = ax_20.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_30.plot(x, np.abs(u_3)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_30.plot(x, np.abs(u_3)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_30.set_xlim(x_min, x_max)
 ax_30.set_ylim(y_min_left_column, y_max_left_column)
@@ -650,10 +700,26 @@ ax_30.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_30.set_ylabel(ylabel_30)
     
 ax_30.set_xticklabels([])
+
+
+
+ax_V = ax_30.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_40.plot(x, np.abs(u_4)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_40.plot(x, np.abs(u_4)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_40.set_xlim(x_min, x_max)
 ax_40.set_ylim(y_min_left_column, y_max_left_column)
@@ -671,10 +737,25 @@ ax_40.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_40.set_ylabel(ylabel_40)
     
 ax_40.set_xticklabels([])
+
+
+ax_V = ax_40.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_50.plot(x, np.abs(u_5)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_50.plot(x, np.abs(u_5)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_50.set_xlim(x_min, x_max)
 ax_50.set_ylim(y_min_left_column, y_max_left_column)
@@ -692,10 +773,25 @@ ax_50.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_50.set_ylabel(ylabel_50)
     
 ax_50.set_xticklabels([])
+
+
+ax_V = ax_50.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_60.plot(x, np.abs(u_6)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_60.plot(x, np.abs(u_6)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_60.set_xlim(x_min, x_max)
 ax_60.set_ylim(y_min_left_column, y_max_left_column)
@@ -713,10 +809,26 @@ ax_60.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_60.set_ylabel(ylabel_60)
     
 ax_60.set_xticklabels([])
+
+
+
+ax_V = ax_60.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_70.plot(x, np.abs(u_7)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_70.plot(x, np.abs(u_7)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_70.set_xlim(x_min, x_max)
 ax_70.set_ylim(y_min_left_column, y_max_left_column)
@@ -734,11 +846,27 @@ ax_70.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_70.set_ylabel(ylabel_70)
     
 ax_70.set_xticklabels([])
+
+
+
+ax_V = ax_70.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 
 #==========================================================================================
-ax_80.plot(x, np.abs(u_8)**2, linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_80.plot(x, np.abs(u_8)**2, linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_80.set_xlim(x_min, x_max)
 ax_80.set_ylim(y_min_left_column, y_max_left_column)
@@ -755,6 +883,22 @@ ax_80.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 
 ax_80.set_xlabel(xlabel)
 ax_80.set_ylabel(ylabel_80)
+
+
+
+ax_V = ax_80.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_left_column_2nd, y_max_left_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_left_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_left_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 
@@ -763,7 +907,7 @@ ax_80.set_ylabel(ylabel_80)
 
 
 #==========================================================================================
-ax_01.plot(x, np.real(u_0), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_01.plot(x, np.real(u_0), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_01.set_xlim(x_min, x_max)
 ax_01.set_ylim(y_min_right_column, y_max_right_column)
@@ -780,10 +924,26 @@ ax_01.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_01.set_ylabel(ylabel_01)
 
 ax_01.set_xticklabels([])
+
+
+
+ax_V = ax_01.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_11.plot(x, np.real(u_1), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_11.plot(x, np.real(u_1), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_11.set_xlim(x_min, x_max)
 ax_11.set_ylim(y_min_right_column, y_max_right_column)
@@ -801,10 +961,26 @@ ax_11.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_11.set_ylabel(ylabel_11)
     
 ax_11.set_xticklabels([])
+
+
+
+ax_V = ax_11.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_21.plot(x, np.real(u_2), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_21.plot(x, np.real(u_2), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_21.set_xlim(x_min, x_max)
 ax_21.set_ylim(y_min_right_column, y_max_right_column)
@@ -822,10 +998,27 @@ ax_21.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_21.set_ylabel(ylabel_21)
     
 ax_21.set_xticklabels([])
+
+
+
+ax_V = ax_21.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_31.plot(x, np.real(u_3), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+# ax_31.plot(x, np.abs(u_ref_3)**2, linewidth=linewidth_u_ref, linestyle=linestyle_u_ref, color=color_u_ref, label=label_u_ref)
+ax_31.plot(x, np.real(u_3), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_31.set_xlim(x_min, x_max)
 ax_31.set_ylim(y_min_right_column, y_max_right_column)
@@ -843,10 +1036,26 @@ ax_31.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_31.set_ylabel(ylabel_31)
     
 ax_31.set_xticklabels([])
+
+
+
+ax_V = ax_31.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_41.plot(x, np.real(u_4), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_41.plot(x, np.real(u_4), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_41.set_xlim(x_min, x_max)
 ax_41.set_ylim(y_min_right_column, y_max_right_column)
@@ -864,10 +1073,26 @@ ax_41.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_41.set_ylabel(ylabel_41)
     
 ax_41.set_xticklabels([])
+
+
+
+ax_V = ax_41.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_51.plot(x, np.real(u_5), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_51.plot(x, np.real(u_5), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_51.set_xlim(x_min, x_max)
 ax_51.set_ylim(y_min_right_column, y_max_right_column)
@@ -885,14 +1110,29 @@ ax_51.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_51.set_ylabel(ylabel_51)
     
 ax_51.set_xticklabels([])
+
+
+
+ax_V = ax_51.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_61.plot(x, np.real(u_6), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_61.plot(x, np.real(u_6), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_61.set_xlim(x_min, x_max)
 ax_61.set_ylim(y_min_right_column, y_max_right_column)
-
 
 ax_61.set_xticks(x_ticks_major, minor=False)
 ax_61.set_xticks(x_ticks_minor, minor=True)
@@ -906,10 +1146,26 @@ ax_61.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_61.set_ylabel(ylabel_61)
     
 ax_61.set_xticklabels([])
+
+
+
+ax_V = ax_61.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 #==========================================================================================
-ax_71.plot(x, np.real(u_7), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_71.plot(x, np.real(u_7), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_71.set_xlim(x_min, x_max)
 ax_71.set_ylim(y_min_right_column, y_max_right_column)
@@ -927,11 +1183,27 @@ ax_71.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_71.set_ylabel(ylabel_71)
 
 ax_71.set_xticklabels([])
+
+
+
+ax_V = ax_71.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
 
 
 #==========================================================================================
-ax_81.plot(x, np.real(u_8), linewidth=linewidth_u, linestyle=linestyle_u, color=color_u, label=label_u)
+ax_81.plot(x, np.real(u_8), linewidth=linewidth_u,     linestyle=linestyle_u,     color=color_u,     label=label_u)
 
 ax_81.set_xlim(x_min, x_max)
 ax_81.set_ylim(y_min_right_column, y_max_right_column)
@@ -948,10 +1220,23 @@ ax_81.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 
 ax_81.set_xlabel(xlabel)
 ax_81.set_ylabel(ylabel_81)
+
+
+
+ax_V = ax_81.twinx()
+
+ax_V.plot(x, V, linewidth=linewidth_V, linestyle=linestyle_V, color=color_V, label=label_V)
+
+ax_V.set_ylim(y_min_right_column_2nd, y_max_right_column_2nd)
+
+ax_V.set_yticks(y_ticks_major_right_column_2nd, minor=False)
+ax_V.set_yticks(y_ticks_minor_right_column_2nd, minor=True)
+
+ax_V.grid(b=False, which='major')
+ax_V.grid(b=False, which='minor')
+
+ax_V.set_ylabel(r'$V(x)$')
 #==========================================================================================
-
-
-
 
 
 
@@ -969,7 +1254,7 @@ ax_81.set_ylabel(ylabel_81)
 width  = 8
 height = 6
 
-name_fig_2 = "figure_bright_soliton_time_evolution"
+name_fig_2 = "figure_coherent_state_time_evolution"
 
 fig_2 = plt.figure(name_fig_2, figsize=(width, height), facecolor="white", constrained_layout=False)
 
@@ -985,40 +1270,42 @@ ax_10 = fig_2.add_subplot(gridspec[1, 0])
 
 
 #==========================================================================================
-ax_00.axis([0, T, 1e-8, 1])
+ax_00.axis([0, T, 1e-6, 1])
 
 ax_00.set_yscale('log')
 
 
-rel_error_cn_2_of_times_analysis[0] = 1e-9
-rel_error_cn_4_of_times_analysis[0] = 1e-9
-rel_error_cn_6_of_times_analysis[0] = 1e-9
-rel_error_cn_8_of_times_analysis[0] = 1e-9
+rel_error_cn_2_of_times_analysis[0] = 1e-15
+rel_error_cn_4_of_times_analysis[0] = 1e-15
+rel_error_cn_6_of_times_analysis[0] = 1e-15
+rel_error_cn_8_of_times_analysis[0] = 1e-15
 
-rel_error_rk4_2_of_times_analysis[0] = 1e-9
-rel_error_rk4_4_of_times_analysis[0] = 1e-9
-rel_error_rk4_6_of_times_analysis[0] = 1e-9
-rel_error_rk4_8_of_times_analysis[0] = 1e-9
+rel_error_rk4_2_of_times_analysis[0] = 1e-15
+rel_error_rk4_4_of_times_analysis[0] = 1e-15
+rel_error_rk4_6_of_times_analysis[0] = 1e-15
+rel_error_rk4_8_of_times_analysis[0] = 1e-15
 
 
-ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{REL}_2$')
-ax_00.semilogy(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{REL}_4$')
-ax_00.semilogy(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{REL}_6$')
-ax_00.semilogy(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{REL}_8$')
 
-ax_00.semilogy(times_analysis, rel_error_rk4_2_of_times_analysis, linewidth=linewidth_rel_error_rk4_2, linestyle=linestyle_rel_error_rk4_2, color=color_rel_error_rk4_2, label=r'$\mathrm{RK4}_2$')
-ax_00.semilogy(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=linewidth_rel_error_rk4_4, linestyle=linestyle_rel_error_rk4_4, color=color_rel_error_rk4_4, label=r'$\mathrm{RK4}_4$')
-ax_00.semilogy(times_analysis, rel_error_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=r'$\mathrm{RK4}_6$')
-ax_00.semilogy(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=r'$\mathrm{RK4}_8$')
+ax_00.plot(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{CN}_2$')
+ax_00.plot(times_analysis, rel_error_cn_4_of_times_analysis,  linewidth=linewidth_rel_error_cn_4,  linestyle=linestyle_rel_error_cn_4,  color=color_rel_error_cn_4,  label=r'$\mathrm{CN}_4$')
+ax_00.plot(times_analysis, rel_error_cn_6_of_times_analysis,  linewidth=linewidth_rel_error_cn_6,  linestyle=linestyle_rel_error_cn_6,  color=color_rel_error_cn_6,  label=r'$\mathrm{CN}_6$')
+ax_00.plot(times_analysis, rel_error_cn_8_of_times_analysis,  linewidth=linewidth_rel_error_cn_8,  linestyle=linestyle_rel_error_cn_8,  color=color_rel_error_cn_8,  label=r'$\mathrm{CN}_8$')
+
+ax_00.plot(times_analysis, rel_error_rk4_2_of_times_analysis, linewidth=linewidth_rel_error_rk4_2, linestyle=linestyle_rel_error_rk4_2, color=color_rel_error_rk4_2, label=r'$\mathrm{RK4}_2$')
+ax_00.plot(times_analysis, rel_error_rk4_4_of_times_analysis, linewidth=linewidth_rel_error_rk4_4, linestyle=linestyle_rel_error_rk4_4, color=color_rel_error_rk4_4, label=r'$\mathrm{RK4}_4$')
+ax_00.plot(times_analysis, rel_error_rk4_6_of_times_analysis, linewidth=linewidth_rel_error_rk4_6, linestyle=linestyle_rel_error_rk4_6, color=color_rel_error_rk4_6, label=r'$\mathrm{RK4}_6$')
+ax_00.plot(times_analysis, rel_error_rk4_8_of_times_analysis, linewidth=linewidth_rel_error_rk4_8, linestyle=linestyle_rel_error_rk4_8, color=color_rel_error_rk4_8, label=r'$\mathrm{RK4}_8$')
+
+
 
 ax_00.set_xticks(t_ticks_major, minor=False)
 ax_00.set_xticks(t_ticks_minor, minor=True)
 
 
-
-
-majorLocator = FixedLocator([1e-8, 1e-6, 1e-4, 1e-2, 1e-0])
+majorLocator = FixedLocator([1e-6, 1e-4, 1e-2, 1e-0])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
+
 
 ax_00.yaxis.set_major_locator(majorLocator)
 ax_00.yaxis.set_minor_locator(minorLocator)
@@ -1028,9 +1315,9 @@ ax_00.yaxis.set_minor_formatter(NullFormatter())
 
 
 
-
 ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
 ax_00.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linestyle_gridlines_minor, linewidth=linewidth_gridlines_minor)
+
 
 ax_00.set_ylabel(r'$\|\bm{u}(t) - \bm{u}_\mathrm{ref}(t) \|_2 / \| \bm{u}_\mathrm{ref}(t) \|_2$')
 
@@ -1040,20 +1327,20 @@ ax_00.legend(loc='upper right', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-ax_10.axis([0, T, 1e-13, 1e-10])
+ax_10.axis([0, T, 1e-16, 1e-6])
 
 ax_10.set_yscale('log')
 
 
-deviation_mass_cn_2_of_times_analysis[0] = 1e-14
-deviation_mass_cn_4_of_times_analysis[0] = 1e-14
-deviation_mass_cn_6_of_times_analysis[0] = 1e-14
-deviation_mass_cn_8_of_times_analysis[0] = 1e-14
+deviation_mass_cn_2_of_times_analysis[0] = 1e-18
+deviation_mass_cn_4_of_times_analysis[0] = 1e-18
+deviation_mass_cn_6_of_times_analysis[0] = 1e-18
+deviation_mass_cn_8_of_times_analysis[0] = 1e-18
 
-deviation_mass_rk4_2_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_4_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_6_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_8_of_times_analysis[0] = 1e-14
+deviation_mass_rk4_2_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_4_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_6_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_8_of_times_analysis[0] = 1e-18
 
 
 ax_10.plot(times_analysis, deviation_mass_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=label_u)
@@ -1072,9 +1359,9 @@ ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
 
-
-majorLocator = FixedLocator([1e-16, 1e-15, 1e-14, 1e-13, 1e-12, 1e-11, 1e-10])
+majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
+
 
 ax_10.yaxis.set_major_locator(majorLocator)
 ax_10.yaxis.set_minor_locator(minorLocator)
@@ -1090,6 +1377,7 @@ ax_10.grid(b=True, which='minor', color=color_gridlines_minor, linestyle=linesty
 ax_10.set_xlabel(r'$t$')
 ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
 #==========================================================================================
+
 
 
 
@@ -1119,6 +1407,11 @@ if export_pdf == True:
 else:
 
     plt.show()
+
+
+
+
+
 
 
 

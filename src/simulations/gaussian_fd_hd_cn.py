@@ -2,10 +2,9 @@
 Equation: free Schroedinger equation
 Initial condition: Gaussian wave packet
 Spatial approximation: finite differences
-Boundary conditions: periodic
-Time-integration method: implicit Euler
+Boundary conditions: homogeneous Dirichlet
+Time-integration method: Crank-Nicolson
 """
-
 
 from scipy.sparse import eye
 
@@ -14,7 +13,7 @@ from scipy.sparse.linalg import spsolve
 
 import numpy as np
 
-np.set_printoptions(edgeitems=8, linewidth=200, precision=8)
+np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
 from simulations.reference_solutions import gaussian
@@ -23,6 +22,11 @@ from simulations.figure_1 import Figure1
 
 
 from differentiation import finite_differences_1d
+
+
+
+order_spatial_discretization = 2
+
 
 
 
@@ -35,7 +39,7 @@ Jx = 200
 
 x_complete = np.linspace(x_min, x_max, Jx+1, endpoint=True)
 
-x = x_complete[0:-1]
+x = x_complete[1:-1]
 
 dx = x[1] - x[0]
 
@@ -67,18 +71,23 @@ dt_new = times[1] - times[0]
 assert(dt_new == dt)
 #------------------------------------------------------------------------------
 
+#------------------------------------------------------------------------------
 n_mod_times_analysis = 25
-# n_mod_times_analysis = 1
+#------------------------------------------------------------------------------
 
 
 
-D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
+D2 = finite_differences_1d.get_D2_dirichlet_2nd_order(Jx-1, dx)
 
-E = eye(Jx)
+E = eye(Jx-1)
 
-A = E - 0.5 * 1j * dt * D2
+A = E - 0.25 * 1j * dt * D2
+B = E + 0.25 * 1j * dt * D2
 
 
+
+
+u = u_ref
 
 
 
@@ -90,9 +99,10 @@ fig_1.redraw()
 
 
 
+
 nr_times_analysis = 0
 
-for n in np.arange(times.size):
+for n in np.arange(times.size+1):
     
     if n % n_mod_times_analysis == 0:
         
@@ -125,18 +135,14 @@ for n in np.arange(times.size):
                 + gaussian(x +  9*L, t, x0, k0, sigma_0)
                 + gaussian(x + 10*L, t, x0, k0, sigma_0)
                 )
-          
+        
         fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
+        
     
-    u = spsolve(A, u)
+    u = spsolve(A, B*u)
     
-    
-input('press any key ...')
-
-
-
 
 
 

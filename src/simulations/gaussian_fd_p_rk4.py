@@ -1,3 +1,12 @@
+"""
+Equation: free Schroedinger equation
+Initial condition: Gaussian wave packet
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: RK4
+"""
+
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
@@ -14,8 +23,6 @@ from differentiation import finite_differences_1d
 
 
 order_spatial_discretization = 8
-
-
 
 
 
@@ -51,82 +58,53 @@ u = u_ref
 
 
 
-
-
-
 if order_spatial_discretization == 2:
     
     D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
-
+    dt_max = 1.414 * dx**2
 
 if order_spatial_discretization == 4:
     
     D2 = finite_differences_1d.get_D2_circulant_4th_order(Jx, dx)
-    
-    
+    dt_max = 1.060 * dx**2
+      
 if order_spatial_discretization == 6:
     
     D2 = finite_differences_1d.get_D2_circulant_6th_order(Jx, dx)
-    
+    dt_max = 0.935 * dx**2
     
 if order_spatial_discretization == 8:
     
     D2 = finite_differences_1d.get_D2_circulant_8th_order(Jx, dx)
-
+    dt_max = 0.870 * dx**2
 
 
 A = 1j * 0.5 * D2
 
+    
+print('dt_max: {0:f}'.format(dt_max))
+
+input('press any key to continue ... ')
 
 
 
-
-if order_spatial_discretization == 2:
-
-    dt_upper_bound_2nd_order = 1.414 * dx**2
-    
-    dt = 1.0 * dt_upper_bound_2nd_order
-    
-    
-if order_spatial_discretization == 4:
-    
-    dt_upper_bound_4th_order = 1.060 * dx**2
-
-    dt = 1.0 * dt_upper_bound_4th_order
-    
-    
-if order_spatial_discretization == 6:
-    
-    dt_upper_bound_6th_order = 0.935 * dx**2
-
-    dt = 1.0 * dt_upper_bound_6th_order
-    
-      
-if order_spatial_discretization == 8:
-    
-    dt_upper_bound_8th_order = 0.870 * dx**2
-    
-    dt = 1.0 * dt_upper_bound_8th_order
-    
-
-
-
+#------------------------------------------------------------------------------
 T = 4
+
+dt = 0.005
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
 
+dt_new = times[1] - times[0]
 
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
 
-
-
-
-
-n_mod_times_analysis = 10
-
-times_analysis = times[::n_mod_times_analysis]
-
+#------------------------------------------------------------------------------
+n_mod_times_analysis = 25
+#------------------------------------------------------------------------------
 
 
 
@@ -148,11 +126,9 @@ for n in np.arange(times.size):
         
         t = times[n]
         
-        
         print('n: {0:d}'.format(n))
         print('t: {0:1.2f}'.format(t))
         print()
-        
         
         u_ref = (
                 + gaussian(x - 10*L, t, x0, k0, sigma_0) 
@@ -177,10 +153,6 @@ for n in np.arange(times.size):
                 + gaussian(x +  9*L, t, x0, k0, sigma_0)
                 + gaussian(x + 10*L, t, x0, k0, sigma_0)
                 )
-        
-        
-        times_analysis[nr_times_analysis] = t 
-        
         
         fig_1.update_u(u, u_ref)
         

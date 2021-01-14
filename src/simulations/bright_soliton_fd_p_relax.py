@@ -1,3 +1,12 @@
+"""
+Equation: cubic nonlinear Schroedinger equation
+Initial condition: bright soliton
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: relaxation
+"""
+
+
 from scipy.sparse import eye, spdiags
 
 from scipy.sparse.linalg import spsolve
@@ -60,18 +69,23 @@ if order_spatial_discretization == 8:
 
 
 
-
+#------------------------------------------------------------------------------
+T = 4
 
 dt = 0.001
-
-
-
-
-T = 4
 
 n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
+
+dt_new = times[1] - times[0]
+
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+n_mod_times_analysis = 25
+
+times_analysis = times[::n_mod_times_analysis]
 
 
 
@@ -91,17 +105,6 @@ psi_old = np.abs(u_ref)**2
 
 
 
-n_mod_times_analysis = 50
-
-times_analysis = times[::n_mod_times_analysis]
-
-
-
-norm_u_of_times_analysis = np.zeros_like(times_analysis)
-rel_error_of_times_analysis = np.zeros_like(times_analysis)
-
-
-
 
 fig_1 = Figure1(x, 20, 0, None, u_ref)
 
@@ -109,10 +112,6 @@ fig_1.update_u(u, u_ref)
    
 fig_1.redraw()
 
-
-
-
-nr_times_analysis = 0
 
 for n in np.arange(times.size):
     
@@ -136,25 +135,10 @@ for n in np.arange(times.size):
                 + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
                 )
         
-        norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
-        
-        
-        defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
-        
-        
-        
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
-        
-        times_analysis[nr_times_analysis] = t 
-        
-        
         fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
         
-        
-        nr_times_analysis = nr_times_analysis + 1
-    
     
     psi_new = 2 * np.abs(u)**2 - psi_old
     

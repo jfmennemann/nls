@@ -1,3 +1,13 @@
+"""
+Equation: linear Schroedinger equation
+Initial condition: coherent state
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: Crank-Nicolson
+"""
+
+
+
 from scipy.sparse import eye, spdiags
 from scipy.sparse.linalg import spsolve
 
@@ -99,12 +109,9 @@ B = E  +  0.25 * dt * 1j * D2  -  0.5 * dt * 1j * diag_V
 
 
 
-
-
 u_ref = coherent_state(x, 0.0, x0, omega)
 
 u = u_ref
-
 
 
 
@@ -116,7 +123,6 @@ fig_1.update_u(u, u_ref)
 fig_1.update_V(V)
 
 fig_1.redraw()
-
 
 
 for n in np.arange(times.size):

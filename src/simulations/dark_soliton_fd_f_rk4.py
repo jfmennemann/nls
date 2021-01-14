@@ -1,3 +1,11 @@
+"""
+Equation: cubic nonlinear Schroedinger equation
+Initial condition: dark soliton
+Spatial approximation: finite differences
+Boundary conditions: free boundary conditions
+Time-integration method: RK4
+"""
+
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
@@ -15,8 +23,6 @@ from simulations.figure_1 import Figure1
 
 
 
-
-
 x_min = -8
 x_max = +8
 
@@ -30,6 +36,7 @@ dx = x[1] - x[0]
 
 
 
+#------------------------------------------------------------------------------
 T = 8
 
 dt = 0.0025
@@ -38,7 +45,15 @@ n_times = np.int(np.round(T / dt)) + 1
         
 times = np.linspace(0, T, n_times, endpoint=True)
 
+dt_new = times[1] - times[0]
 
+assert(dt_new == dt)
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+n_mod_times_analysis = 25
+# n_mod_times_analysis = 1
+#------------------------------------------------------------------------------
 
 
 
@@ -64,9 +79,6 @@ D_xx = D_xx / dx**2
 
 
 
-
-
-
 v = 1
 
 x0 = -5
@@ -81,30 +93,12 @@ phi = 0.0 * np.pi
 u_ref = dark_soliton(x, 0, x0, theta_0, u0, v, beta, phi)
 
 u = u_ref
-
-assert(u.size == Jx+1)
-    
-
-
-
+ 
 
 
 def eval_f(y):
     
     return 0.5 * 1j * D_xx * y - 1j * beta * np.abs(y)**2 * y
-
-
-
-
-n_mod_times_analysis = 20
-
-times_analysis = times[::n_mod_times_analysis]
-
-
-
-norm_u_of_times_analysis = np.zeros_like(times_analysis)
-rel_error_of_times_analysis = np.zeros_like(times_analysis)
-
 
 
 
@@ -116,10 +110,6 @@ fig_1.update_u(u, u_ref)
 fig_1.redraw()
 
 
-
-
-nr_times_analysis = 0
-
 for n in np.arange(times.size):
     
     if n % n_mod_times_analysis == 0:
@@ -130,27 +120,11 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        
         u_ref = dark_soliton(x, t, x0, theta_0, u0, v, beta, phi)
-
-        
-        norm_u_of_times_analysis[nr_times_analysis] = np.linalg.norm(u)
-        
-        defect_of_mass_of_times_analysis = np.abs(1.0 - norm_u_of_times_analysis / norm_u_of_times_analysis[0])
-        
-        
-        
-        rel_error_of_times_analysis[nr_times_analysis] = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
-        
-        times_analysis[nr_times_analysis] = t 
-        
         
         fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
-        
-        
-        nr_times_analysis = nr_times_analysis + 1
     
     
     k1 = eval_f(u)

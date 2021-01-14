@@ -1,3 +1,12 @@
+"""
+Equation: linear Schroedinger equation
+Initial condition: coherent state
+Spatial approximation: finite differences
+Boundary conditions: periodic
+Time-integration method: RK4
+"""
+
+
 from scipy.sparse import spdiags
 
 
@@ -88,6 +97,7 @@ input('press any key to continue ... ')
 
 
 
+#------------------------------------------------------------------------------
 T = 2
 
 dt = 0.0005
@@ -99,12 +109,12 @@ times = np.linspace(0, T, n_times, endpoint=True)
 dt_new = times[1] - times[0]
 
 assert(dt_new == dt)
+#------------------------------------------------------------------------------
 
-
+#------------------------------------------------------------------------------
 n_mod_times_analysis = 25
 # n_mod_times_analysis = 1
-
-
+#------------------------------------------------------------------------------
 
 
 
@@ -114,9 +124,6 @@ u = u_ref
 
 
 
-n_mod_times_analysis = 25
-
-
 fig_1 = Figure1(x, 1.5, 200, V, u_ref)
 
 fig_1.update_u(u, u_ref)
@@ -124,7 +131,6 @@ fig_1.update_u(u, u_ref)
 fig_1.update_V(V)
 
 fig_1.redraw()
-
 
 
 for n in np.arange(times.size):
