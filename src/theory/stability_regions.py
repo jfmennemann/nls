@@ -181,7 +181,7 @@ ax_RK4.set_ylabel(r'$\operatorname{Im}(z)$')
 
 if export_pdf == True:
     
-    path = "/home/jfmennemann/git/nls/pdf/"
+    path = "/home/jfmennemann/git/nls/pdf/stability/"
 
     filepath = path + "figure_stability_regions.pdf"
 

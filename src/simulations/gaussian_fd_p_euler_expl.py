@@ -16,7 +16,7 @@ import numpy as np
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-from simulations.reference_solutions import gaussian
+from simulations.reference_solutions import gaussian_periodic
 
 from simulations.figure_1 import Figure1
 
@@ -27,6 +27,8 @@ from differentiation import finite_differences_1d
 
 x_min = -8
 x_max = +8
+
+L = x_max - x_min
 
 Jx = 200
 
@@ -46,7 +48,7 @@ sigma_0 = 0.5
 k0 = 4
 
 
-u_ref = gaussian(x, 0.0, x0, k0, sigma_0)
+u_ref = gaussian_periodic(x, 0.0, x0, k0, sigma_0, L)
 
 u = u_ref
 
@@ -74,22 +76,10 @@ n_mod_times_analysis = 25
 
 D2 = finite_differences_1d.get_D2_circulant_2nd_order(Jx, dx)
 
-
-
 E = eye(Jx)
 
 A = E - 0.5 * 1j * dt * D2
 
-
-
-
-u_ref = gaussian(x, 0.0, x0, k0, sigma_0)
-
-u = u_ref
-
-
-
-n_mod_times_analysis = 50
 
 
 
@@ -110,7 +100,7 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = gaussian(x, t, x0, k0, sigma_0)
+        u_ref = gaussian_periodic(x, t, x0, k0, sigma_0, L)
     
         
         fig_1.update_u(u, u_ref)

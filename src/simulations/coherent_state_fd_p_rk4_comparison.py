@@ -61,8 +61,8 @@ assert(dt_new == dt)
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-n_mod_times_analysis = 25
-# n_mod_times_analysis = 1
+# n_mod_times_analysis = 25
+n_mod_times_analysis = 1
 
 times_analysis = times[::n_mod_times_analysis]
 #------------------------------------------------------------------------------
@@ -1252,16 +1252,16 @@ ax_V.set_ylabel(r'$V(x)$')
 
 
 width  = 8
-height = 6
+height = 5
 
 name_fig_2 = "figure_coherent_state_time_evolution"
 
 fig_2 = plt.figure(name_fig_2, figsize=(width, height), facecolor="white", constrained_layout=False)
 
 spacing_x = 0.2
-spacing_y = 0.1
+spacing_y = 0.125
 
-gridspec = fig_2.add_gridspec(ncols=1, nrows=2, left=0.1, right=0.975, bottom=0.075, top=0.975, wspace=spacing_x, hspace=spacing_y)
+gridspec = fig_2.add_gridspec(ncols=1, nrows=2, left=0.1, right=0.975, bottom=0.085, top=0.975, wspace=spacing_x, hspace=spacing_y)
 
 
 ax_00 = fig_2.add_subplot(gridspec[0, 0])
@@ -1306,13 +1306,10 @@ ax_00.set_xticks(t_ticks_minor, minor=True)
 majorLocator = FixedLocator([1e-6, 1e-4, 1e-2, 1e-0])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
-
 ax_00.yaxis.set_major_locator(majorLocator)
 ax_00.yaxis.set_minor_locator(minorLocator)
 
 ax_00.yaxis.set_minor_formatter(NullFormatter())
-
-
 
 
 ax_00.grid(b=True, which='major', color=color_gridlines_major, linestyle=linestyle_gridlines_major, linewidth=linewidth_gridlines_major)
@@ -1327,20 +1324,20 @@ ax_00.legend(loc='upper right', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-ax_10.axis([0, T, 1e-16, 1e-6])
+ax_10.axis([0, T, 1e-16, 1e-4])
 
 ax_10.set_yscale('log')
 
 
-deviation_mass_cn_2_of_times_analysis[0] = 1e-18
-deviation_mass_cn_4_of_times_analysis[0] = 1e-18
-deviation_mass_cn_6_of_times_analysis[0] = 1e-18
-deviation_mass_cn_8_of_times_analysis[0] = 1e-18
+deviation_mass_cn_2_of_times_analysis[0] = 1e-17
+deviation_mass_cn_4_of_times_analysis[0] = 1e-17
+deviation_mass_cn_6_of_times_analysis[0] = 1e-17
+deviation_mass_cn_8_of_times_analysis[0] = 1e-17
 
-deviation_mass_rk4_2_of_times_analysis[0] = 1e-18
-deviation_mass_rk4_4_of_times_analysis[0] = 1e-18
-deviation_mass_rk4_6_of_times_analysis[0] = 1e-18
-deviation_mass_rk4_8_of_times_analysis[0] = 1e-18
+deviation_mass_rk4_2_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_4_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_6_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_8_of_times_analysis[0] = 1e-17
 
 
 ax_10.plot(times_analysis, deviation_mass_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=label_u)
@@ -1358,16 +1355,13 @@ ax_10.set_xticks(t_ticks_major, minor=False)
 ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
-
-majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-8, 1e-6])
+majorLocator = FixedLocator([1e-16, 1e-12, 1e-8, 1e-4])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
-
 
 ax_10.yaxis.set_major_locator(majorLocator)
 ax_10.yaxis.set_minor_locator(minorLocator)
 
 ax_10.yaxis.set_minor_formatter(NullFormatter())
-
 
 
 
@@ -1378,17 +1372,13 @@ ax_10.set_xlabel(r'$t$')
 ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
 #==========================================================================================
 
-
-
-
-
 plt.draw()
 
 
 
 if export_pdf == True:
     
-    path = "/home/jfmennemann/git/nls/pdf/"
+    path = "/home/jfmennemann/git/nls/pdf/coherent_state/"
     
     
     plt.figure(name_fig_1)

@@ -80,15 +80,21 @@ color_stability_regions = '#d3d3d3'
 
 rc_parameters = {
     "text.usetex": True,
+    "font.family": "sans-serif",
+    # "font.family": "serif",
+    "font.sans-serif": ["Computer Modern"],
     "pgf.rcfonts": False,
+    "font.size": 12,
     #
     "axes.titlesize": 12,
+    "axes.titleweight": "normal",
     "axes.labelsize": 12,
     "axes.linewidth": 0.85,
     "axes.labelpad": 4,
     "axes.grid": True,
     "axes.grid.axis": "both",
     "axes.grid.which": "both",
+    #
     #
     # 'grid.color': 'b0b0b0',
     # 'grid.linestyle': '--',
@@ -100,14 +106,15 @@ rc_parameters = {
     "xtick.major.pad": 1,
     "ytick.major.pad": 1,
     #
+    "legend.fontsize": 12,
     "legend.frameon": True,
     "legend.framealpha": 1.0,
     "legend.edgecolor": mycolors.wet_asphalt,
-    "legend.fontsize": 12,
     "legend.fancybox": False,
     "legend.shadow": True,
     "legend.handlelength": 3.0,
     # 
+    # "pgf.preamble": ("\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n\\usepackage{bbm}\n\\usepackage{bm}\n\\usepackage{cmbright}")
     "pgf.preamble": ("\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n\\usepackage{bbm}\n\\usepackage{bm}")
     }
 

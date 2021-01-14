@@ -17,7 +17,7 @@ import numpy as np
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-from simulations.reference_solutions import bright_soliton
+from simulations.reference_solutions import bright_soliton_periodic
 
 from simulations.figure_1 import Figure1
 
@@ -56,8 +56,12 @@ dt_new = times[1] - times[0]
 assert(dt_new == dt)
 #------------------------------------------------------------------------------
 
-n_mod_times_analysis = 25
+#------------------------------------------------------------------------------
+# n_mod_times_analysis = 25
+n_mod_times_analysis = 1
 
+times_analysis = times[::n_mod_times_analysis]
+#------------------------------------------------------------------------------
 
 
 
@@ -95,21 +99,23 @@ x0 = 0
 theta_0 = 0
 beta = -1
 
-u_ref_0 = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
+u_ref_0 = bright_soliton_periodic(x, 0.0, x0, theta_0, a, v, beta, L)
+
+u_0 = u_ref_0
 
 u = u_ref_0
 
 
 
-u_cn_2 = u_ref_0.copy()
-u_cn_4 = u_ref_0.copy()
-u_cn_6 = u_ref_0.copy()
-u_cn_8 = u_ref_0.copy()
+u_rel_2 = u_ref_0.copy()
+u_rel_4 = u_ref_0.copy()
+u_rel_6 = u_ref_0.copy()
+u_rel_8 = u_ref_0.copy()
 
-psi_old_cn_2 = np.abs(u_ref_0)**2
-psi_old_cn_4 = np.abs(u_ref_0)**2
-psi_old_cn_6 = np.abs(u_ref_0)**2
-psi_old_cn_8 = np.abs(u_ref_0)**2
+psi_old_rel_2 = np.abs(u_ref_0)**2
+psi_old_rel_4 = np.abs(u_ref_0)**2
+psi_old_rel_6 = np.abs(u_ref_0)**2
+psi_old_rel_8 = np.abs(u_ref_0)**2
 
 
 
@@ -118,10 +124,6 @@ u_rk4_4 = u_ref_0.copy()
 u_rk4_6 = u_ref_0.copy()
 u_rk4_8 = u_ref_0.copy()
 
-
-
-
-times_analysis = times[::n_mod_times_analysis]
 
 
 rel_error_cn_2_of_times_analysis = np.zeros_like(times_analysis)
@@ -230,18 +232,7 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
-                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
-                )
-        
+        u_ref = bright_soliton_periodic(x, t, x0, theta_0, a, v, beta, L)
         
         
         fig_1.update_u(u_rk4_8, u_ref)
@@ -249,10 +240,10 @@ for n in np.arange(times.size):
         fig_1.redraw()
         
         
-        rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_2-u_ref) / np.linalg.norm(u_ref)
-        rel_error_cn_4_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_4-u_ref) / np.linalg.norm(u_ref)
-        rel_error_cn_6_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_6-u_ref) / np.linalg.norm(u_ref)
-        rel_error_cn_8_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_cn_8-u_ref) / np.linalg.norm(u_ref)
+        rel_error_cn_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rel_2-u_ref) / np.linalg.norm(u_ref)
+        rel_error_cn_4_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rel_4-u_ref) / np.linalg.norm(u_ref)
+        rel_error_cn_6_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rel_6-u_ref) / np.linalg.norm(u_ref)
+        rel_error_cn_8_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rel_8-u_ref) / np.linalg.norm(u_ref)
         
         rel_error_rk4_2_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rk4_2-u_ref) / np.linalg.norm(u_ref)
         rel_error_rk4_4_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rk4_4-u_ref) / np.linalg.norm(u_ref)
@@ -260,10 +251,10 @@ for n in np.arange(times.size):
         rel_error_rk4_8_of_times_analysis[nr_times_analysis] = np.linalg.norm(u_rk4_8-u_ref) / np.linalg.norm(u_ref)
         
         
-        deviation_mass_cn_2_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_cn_2)/np.linalg.norm(u_ref_0))**2 )
-        deviation_mass_cn_4_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_cn_4)/np.linalg.norm(u_ref_0))**2 )
-        deviation_mass_cn_6_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_cn_6)/np.linalg.norm(u_ref_0))**2 )
-        deviation_mass_cn_8_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_cn_8)/np.linalg.norm(u_ref_0))**2 )
+        deviation_mass_cn_2_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rel_2)/np.linalg.norm(u_ref_0))**2 )
+        deviation_mass_cn_4_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rel_4)/np.linalg.norm(u_ref_0))**2 )
+        deviation_mass_cn_6_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rel_6)/np.linalg.norm(u_ref_0))**2 )
+        deviation_mass_cn_8_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rel_8)/np.linalg.norm(u_ref_0))**2 )
         
         deviation_mass_rk4_2_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rk4_2)/np.linalg.norm(u_ref_0))**2 )
         deviation_mass_rk4_4_of_times_analysis[nr_times_analysis] = np.abs( 1 - (np.linalg.norm(u_rk4_4)/np.linalg.norm(u_ref_0))**2 )
@@ -277,7 +268,7 @@ for n in np.arange(times.size):
         nr_times_analysis = nr_times_analysis + 1
         
         
-        u_snapshot = u_cn_4.copy()
+        u_snapshot = u_rel_4.copy()
         
         if n == n_0:
             
@@ -328,35 +319,31 @@ for n in np.arange(times.size):
     
     
     #---------------------------------------------------------------------------------------------#
-    psi_new_cn_2 = 2 * np.abs(u_cn_2)**2 - psi_old_cn_2
-    psi_new_cn_4 = 2 * np.abs(u_cn_4)**2 - psi_old_cn_4
-    psi_new_cn_6 = 2 * np.abs(u_cn_6)**2 - psi_old_cn_6
-    psi_new_cn_8 = 2 * np.abs(u_cn_8)**2 - psi_old_cn_8
+    psi_new_rel_2 = 2 * np.abs(u_rel_2)**2 - psi_old_rel_2
+    psi_new_rel_4 = 2 * np.abs(u_rel_4)**2 - psi_old_rel_4
+    psi_new_rel_6 = 2 * np.abs(u_rel_6)**2 - psi_old_rel_6
+    psi_new_rel_8 = 2 * np.abs(u_rel_8)**2 - psi_old_rel_8
     
-    b_cn_2 = u_cn_2 + 0.25 * 1j * dt * D2 * u_cn_2 - 0.5 * 1j * dt * beta * psi_new_cn_2 * u_cn_2
-    b_cn_4 = u_cn_4 + 0.25 * 1j * dt * D4 * u_cn_4 - 0.5 * 1j * dt * beta * psi_new_cn_4 * u_cn_4
-    b_cn_6 = u_cn_6 + 0.25 * 1j * dt * D6 * u_cn_6 - 0.5 * 1j * dt * beta * psi_new_cn_6 * u_cn_6
-    b_cn_8 = u_cn_8 + 0.25 * 1j * dt * D8 * u_cn_8 - 0.5 * 1j * dt * beta * psi_new_cn_8 * u_cn_8
+    b_rel_2 = u_rel_2 + 0.25 * 1j * dt * D2 * u_rel_2 - 0.5 * 1j * dt * beta * psi_new_rel_2 * u_rel_2
+    b_rel_4 = u_rel_4 + 0.25 * 1j * dt * D4 * u_rel_4 - 0.5 * 1j * dt * beta * psi_new_rel_4 * u_rel_4
+    b_rel_6 = u_rel_6 + 0.25 * 1j * dt * D6 * u_rel_6 - 0.5 * 1j * dt * beta * psi_new_rel_6 * u_rel_6
+    b_rel_8 = u_rel_8 + 0.25 * 1j * dt * D8 * u_rel_8 - 0.5 * 1j * dt * beta * psi_new_rel_8 * u_rel_8
     
-    A_cn_2 = eye(Jx) - 0.25 * 1j * dt * D2 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_2, 0, Jx, Jx)
-    A_cn_4 = eye(Jx) - 0.25 * 1j * dt * D4 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_4, 0, Jx, Jx)
-    A_cn_6 = eye(Jx) - 0.25 * 1j * dt * D6 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_6, 0, Jx, Jx)
-    A_cn_8 = eye(Jx) - 0.25 * 1j * dt * D8 + 0.5 * 1j * dt * beta * spdiags(psi_new_cn_8, 0, Jx, Jx)
+    A_rel_2 = eye(Jx) - 0.25 * 1j * dt * D2 + 0.5 * 1j * dt * beta * spdiags(psi_new_rel_2, 0, Jx, Jx)
+    A_rel_4 = eye(Jx) - 0.25 * 1j * dt * D4 + 0.5 * 1j * dt * beta * spdiags(psi_new_rel_4, 0, Jx, Jx)
+    A_rel_6 = eye(Jx) - 0.25 * 1j * dt * D6 + 0.5 * 1j * dt * beta * spdiags(psi_new_rel_6, 0, Jx, Jx)
+    A_rel_8 = eye(Jx) - 0.25 * 1j * dt * D8 + 0.5 * 1j * dt * beta * spdiags(psi_new_rel_8, 0, Jx, Jx)
     
-    u_cn_2 = spsolve(A_cn_2, b_cn_2)
-    u_cn_4 = spsolve(A_cn_4, b_cn_4)
-    u_cn_6 = spsolve(A_cn_6, b_cn_6)
-    u_cn_8 = spsolve(A_cn_8, b_cn_8)
+    u_rel_2 = spsolve(A_rel_2, b_rel_2)
+    u_rel_4 = spsolve(A_rel_4, b_rel_4)
+    u_rel_6 = spsolve(A_rel_6, b_rel_6)
+    u_rel_8 = spsolve(A_rel_8, b_rel_8)
     
-    psi_old_cn_2 = psi_new_cn_2
-    psi_old_cn_4 = psi_new_cn_4
-    psi_old_cn_6 = psi_new_cn_6
-    psi_old_cn_8 = psi_new_cn_8
+    psi_old_rel_2 = psi_new_rel_2
+    psi_old_rel_4 = psi_new_rel_4
+    psi_old_rel_6 = psi_new_rel_6
+    psi_old_rel_8 = psi_new_rel_8
     #---------------------------------------------------------------------------------------------#
-    
-    
-    
-    
     
     
     
@@ -388,7 +375,6 @@ for n in np.arange(times.size):
     
     
     
-    
     k1_rk4_8 = eval_f_rk4_8(u_rk4_8)
     k2_rk4_8 = eval_f_rk4_8(u_rk4_8 + 0.5 * dt * k1_rk4_8)
     k3_rk4_8 = eval_f_rk4_8(u_rk4_8 + 0.5 * dt * k2_rk4_8)
@@ -396,20 +382,6 @@ for n in np.arange(times.size):
     
     u_rk4_8 = u_rk4_8 + (dt/6.0) * (k1_rk4_8 + 2*k2_rk4_8 + 2*k3_rk4_8 + k4_rk4_8)
     #---------------------------------------------------------------------------------------------#
-
-
-
-print()
-print(t_0)
-print(t_1)
-print(t_2)
-print(t_3)
-print()
-
-
-
-
-
 
 
 
@@ -541,7 +513,7 @@ ylabel_81 = r'$\operatorname{Re}\, u(x,t_8)$'
 width  = 8
 height = 8
 
-name_fig_1 = "figure_bright_soliton_snapshots_relaxation_4"
+name_fig_1 = "figure_bright_soliton_snapshots_rel_4"
 
 fig_1 = plt.figure(name_fig_1, figsize=(width, height), facecolor="white", constrained_layout=False)
 
@@ -967,16 +939,16 @@ ax_81.set_ylabel(ylabel_81)
 
 
 width  = 8
-height = 6
+height = 5
 
 name_fig_2 = "figure_bright_soliton_time_evolution"
 
 fig_2 = plt.figure(name_fig_2, figsize=(width, height), facecolor="white", constrained_layout=False)
 
 spacing_x = 0.2
-spacing_y = 0.1
+spacing_y = 0.125
 
-gridspec = fig_2.add_gridspec(ncols=1, nrows=2, left=0.1, right=0.975, bottom=0.075, top=0.975, wspace=spacing_x, hspace=spacing_y)
+gridspec = fig_2.add_gridspec(ncols=1, nrows=2, left=0.1, right=0.975, bottom=0.085, top=0.975, wspace=spacing_x, hspace=spacing_y)
 
 
 ax_00 = fig_2.add_subplot(gridspec[0, 0])
@@ -985,20 +957,20 @@ ax_10 = fig_2.add_subplot(gridspec[1, 0])
 
 
 #==========================================================================================
-ax_00.axis([0, T, 1e-8, 1])
+ax_00.axis([0, T, 1e-6, 1])
 
 ax_00.set_yscale('log')
 
 
-rel_error_cn_2_of_times_analysis[0] = 1e-9
-rel_error_cn_4_of_times_analysis[0] = 1e-9
-rel_error_cn_6_of_times_analysis[0] = 1e-9
-rel_error_cn_8_of_times_analysis[0] = 1e-9
+rel_error_cn_2_of_times_analysis[0] = 1e-7
+rel_error_cn_4_of_times_analysis[0] = 1e-7
+rel_error_cn_6_of_times_analysis[0] = 1e-7
+rel_error_cn_8_of_times_analysis[0] = 1e-7
 
-rel_error_rk4_2_of_times_analysis[0] = 1e-9
-rel_error_rk4_4_of_times_analysis[0] = 1e-9
-rel_error_rk4_6_of_times_analysis[0] = 1e-9
-rel_error_rk4_8_of_times_analysis[0] = 1e-9
+rel_error_rk4_2_of_times_analysis[0] = 1e-7
+rel_error_rk4_4_of_times_analysis[0] = 1e-7
+rel_error_rk4_6_of_times_analysis[0] = 1e-7
+rel_error_rk4_8_of_times_analysis[0] = 1e-7
 
 
 ax_00.semilogy(times_analysis, rel_error_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=r'$\mathrm{REL}_2$')
@@ -1017,7 +989,7 @@ ax_00.set_xticks(t_ticks_minor, minor=True)
 
 
 
-majorLocator = FixedLocator([1e-8, 1e-6, 1e-4, 1e-2, 1e-0])
+majorLocator = FixedLocator([1e-6, 1e-4, 1e-2, 1e-0])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
 ax_00.yaxis.set_major_locator(majorLocator)
@@ -1040,20 +1012,20 @@ ax_00.legend(loc='upper right', ncol=2)
 #==========================================================================================
 
 #==========================================================================================
-ax_10.axis([0, T, 1e-13, 1e-10])
+ax_10.axis([0, T, 1e-16, 1e-10])
 
 ax_10.set_yscale('log')
 
 
-deviation_mass_cn_2_of_times_analysis[0] = 1e-14
-deviation_mass_cn_4_of_times_analysis[0] = 1e-14
-deviation_mass_cn_6_of_times_analysis[0] = 1e-14
-deviation_mass_cn_8_of_times_analysis[0] = 1e-14
+deviation_mass_cn_2_of_times_analysis[0] = 1e-17
+deviation_mass_cn_4_of_times_analysis[0] = 1e-17
+deviation_mass_cn_6_of_times_analysis[0] = 1e-17
+deviation_mass_cn_8_of_times_analysis[0] = 1e-17
 
-deviation_mass_rk4_2_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_4_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_6_of_times_analysis[0] = 1e-14
-deviation_mass_rk4_8_of_times_analysis[0] = 1e-14
+deviation_mass_rk4_2_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_4_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_6_of_times_analysis[0] = 1e-17
+deviation_mass_rk4_8_of_times_analysis[0] = 1e-17
 
 
 ax_10.plot(times_analysis, deviation_mass_cn_2_of_times_analysis,  linewidth=linewidth_rel_error_cn_2,  linestyle=linestyle_rel_error_cn_2,  color=color_rel_error_cn_2,  label=label_u)
@@ -1072,15 +1044,13 @@ ax_10.set_xticks(t_ticks_minor, minor=True)
 
 
 
-
-majorLocator = FixedLocator([1e-16, 1e-15, 1e-14, 1e-13, 1e-12, 1e-11, 1e-10])
+majorLocator = FixedLocator([1e-16, 1e-14, 1e-12, 1e-10])
 minorLocator = mpl.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=100)
 
 ax_10.yaxis.set_major_locator(majorLocator)
 ax_10.yaxis.set_minor_locator(minorLocator)
 
 ax_10.yaxis.set_minor_formatter(NullFormatter())
-
 
 
 
@@ -1091,16 +1061,13 @@ ax_10.set_xlabel(r'$t$')
 ax_10.set_ylabel(r'$\big| 1 - \| \bm{u}(t) \|_2^2 / \| \bm{u}(0) \|_2^2 \big|$')
 #==========================================================================================
 
-
-
-
 plt.draw()
 
 
 
 if export_pdf == True:
     
-    path = "/home/jfmennemann/git/nls/pdf/"
+    path = "/home/jfmennemann/git/nls/pdf/bright_soliton/"
     
     
     plt.figure(name_fig_1)

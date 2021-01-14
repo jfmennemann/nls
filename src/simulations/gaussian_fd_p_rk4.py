@@ -13,7 +13,7 @@ np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
 
-from simulations.reference_solutions import gaussian
+from simulations.reference_solutions import gaussian_periodic
 
 from simulations.figure_1 import Figure1
 
@@ -51,7 +51,7 @@ sigma_0 = 0.5
 k0 = 4
 
 
-u_ref = gaussian(x, 0.0, x0, k0, sigma_0)
+u_ref = gaussian_periodic(x, 0.0, x0, k0, sigma_0, L)
 
 u = u_ref
 
@@ -116,10 +116,6 @@ fig_1.update_u(u, u_ref)
 fig_1.redraw()
 
 
-
-
-nr_times_analysis = 0
-
 for n in np.arange(times.size):
     
     if n % n_mod_times_analysis == 0:
@@ -130,37 +126,11 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + gaussian(x - 10*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  9*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  8*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  7*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  6*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  5*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  4*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  3*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  2*L, t, x0, k0, sigma_0) 
-                + gaussian(x -  1*L, t, x0, k0, sigma_0)
-                + gaussian(x +  0*L, t, x0, k0, sigma_0)
-                + gaussian(x +  1*L, t, x0, k0, sigma_0)
-                + gaussian(x +  2*L, t, x0, k0, sigma_0)
-                + gaussian(x +  3*L, t, x0, k0, sigma_0)
-                + gaussian(x +  4*L, t, x0, k0, sigma_0)
-                + gaussian(x +  5*L, t, x0, k0, sigma_0)
-                + gaussian(x +  6*L, t, x0, k0, sigma_0)
-                + gaussian(x +  7*L, t, x0, k0, sigma_0)
-                + gaussian(x +  8*L, t, x0, k0, sigma_0)
-                + gaussian(x +  9*L, t, x0, k0, sigma_0)
-                + gaussian(x + 10*L, t, x0, k0, sigma_0)
-                )
+        u_ref = gaussian_periodic(x, t, x0, k0, sigma_0, L)
         
         fig_1.update_u(u, u_ref)
         
         fig_1.redraw()
-        
-        
-        nr_times_analysis = nr_times_analysis + 1
-    
     
     k1 = A * u
     k2 = A * (u + 0.5 * dt * k1)

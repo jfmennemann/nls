@@ -7,13 +7,12 @@ Time-integration method: RK4
 """
 
 
-
 import numpy as np
 
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-from simulations.reference_solutions import bright_soliton
+from simulations.reference_solutions import bright_soliton_periodic
 
 from simulations.figure_1 import Figure1
 
@@ -22,9 +21,7 @@ from differentiation import finite_differences_1d
 
 
 
-
 order_spatial_discretization = 8
-
 
 
 
@@ -120,7 +117,7 @@ x0 = 0
 theta_0 = 0
 beta = -1
 
-u_ref_0 = bright_soliton(x, 0.0, x0, theta_0, a, v, beta)
+u_ref_0 = bright_soliton_periodic(x, 0.0, x0, theta_0, a, v, beta, L)
 
 u = u_ref_0
 
@@ -148,17 +145,7 @@ for n in np.arange(times.size):
         print('t: {0:1.2f}'.format(t))
         print()
         
-        u_ref = (
-                + bright_soliton(x+0*L, t, x0, theta_0, a, v, beta) 
-                + bright_soliton(x+1*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+2*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+3*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+4*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+5*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+6*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+7*L, t, x0, theta_0, a, v, beta)
-                + bright_soliton(x+8*L, t, x0, theta_0, a, v, beta)
-                )
+        u_ref = bright_soliton_periodic(x, t, x0, theta_0, a, v, beta, L)
         
         fig_1.update_u(u, u_ref)
         
