@@ -1,10 +1,25 @@
 from numpy import exp
+from numpy import log
 from numpy import cosh
 from numpy import tanh
 from numpy import cos
 from numpy import sqrt
 
 from numpy import pi
+
+
+def Phi(x, t, alpha, nu):
+    
+    xi = x
+    
+    theta = 0.25 * log( (1+nu) / (1-nu) )
+    
+    Delta = 3 * sqrt(2) / (alpha * nu)
+    
+    Phi = (alpha * nu / 3) * ( tanh( (xi/Delta) + theta ) - tanh( (xi/Delta) - theta ) )
+
+    return Phi
+
 
 
 def gaussian(x, t, x0, k0, sigma_0):

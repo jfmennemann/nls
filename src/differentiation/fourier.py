@@ -9,25 +9,28 @@ def get_mue_x(Jx, dx):
     
     Lx = Jx * dx
                  
-    mue_x = (2 * pi / Lx) * np.arange(-Jx//2, Jx//2)
+    nue = np.arange(-Jx//2, Jx//2)
+    # nue[0] = 0
     
-    mue_x = np.fft.fftshift(mue_x)
+    nue = np.fft.fftshift(nue)
+    
+    mue_x = (2 * pi / Lx) * nue
     
     return mue_x
 
     
 if __name__ == "__main__":
     
-    x_min = 0
-    x_max = 2*pi
+    x_min = -pi
+    x_max = +pi
 
-    Jx = 16
+    Jx = 128
     
     x = np.linspace(x_min, x_max, Jx, endpoint=False)
     
     index_center_x = Jx//2
     
-    # assert(np.abs(x[index_center_x]) < 1e-15)
+    assert(np.abs(x[index_center_x]) < 1e-14)
     
     
     dx = x[1] - x[0]
@@ -49,14 +52,7 @@ if __name__ == "__main__":
     
     
     #==========================================================================
-    # u_prime = np.fft.ifftn(1j * mue_x * np.fft.fftn(u))
-    
-    u_hat = np.fft.fftn(u)
-    
-    w_hat = 1j * mue_x * u_hat
-    w_hat[Jx//2] = 0
-    
-    u_prime = np.fft.ifftn(w_hat)
+    u_prime = np.fft.ifftn(1j * mue_x * np.fft.fftn(u))
     #==========================================================================
     
     
