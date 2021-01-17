@@ -1,9 +1,9 @@
 """
-Equation: Gross-Pitaevskii equation
-Initial condition: fat soliton
+Equation: stationary and time-dependent Gross-Pitaevskii equation
+Initial condition: computed by means of normalized gradient flow algorithm
 Spatial approximation: Fourier spectral collocation
 Boundary conditions: periodic
-Time-integration method: Strang-Splitting
+Time-integration method: time-splitting
 """
 
 
@@ -16,15 +16,8 @@ from simulations.figure_2 import Figure2
 
 
 
-dt = 0.001
-
-n_mod_times_analysis = 100
-
-
-
 hbar = 1
 m = 1
-
 
 
 
@@ -55,27 +48,46 @@ nue_x_squared = nue_x**2
 
 
 
-nr_example = 2
+nr_example = 1
 
 if nr_example == 1:
     
-    mue = 1
+    mue_phi = 1
     g = 1
     
     alpha = 1
     
     phi = np.exp(-alpha*x**2/2)
     
-    phi_dd_approx = np.fft.ifftn(-nue_x_squared * np.fft.fftn(phi))
-    
     phi_dd = -alpha * phi + alpha**2 * x**2 * phi 
+    
+    """
+    phi_dd_approx = np.fft.ifftn(-nue_x_squared * np.fft.fftn(phi))
     
     rel_error_phi_dd = np.linalg.norm(phi_dd_approx-phi_dd) / np.linalg.norm(phi_dd)
     
-    # print(rel_error_phi_dd)
-    # input()
+    print(rel_error_phi_dd)
+    input()
+    """
     
-    V = mue + 0.5 * (-alpha + alpha**2 * x**2) - g * np.abs(phi)**2
+    V = mue_phi + 0.5 * (-alpha + alpha**2 * x**2) - g * np.abs(phi)**2
+    
+    #----------------------------------------------------------------------------------------------
+    # settings for the figure
+    
+    density_min_tmp = 0.0
+    density_max_tmp = 1.25
+    
+    V_min_tmp = 0
+    V_max_tmp = 20
+    
+    density_min = density_min_tmp - 0.1 * (density_max_tmp - density_min_tmp)
+    density_max = density_max_tmp + 0.1 * (density_max_tmp - density_min_tmp)
+    
+    V_min = V_min_tmp - 0.1 * (V_max_tmp - V_min_tmp)
+    V_max = V_max_tmp + 0.1 * (V_max_tmp - V_min_tmp)
+    #----------------------------------------------------------------------------------------------
+
 
 elif nr_example == 2:
     
@@ -105,6 +117,42 @@ elif nr_example == 2:
     phi = eval_phi_article(x, alpha, nu)
     
     V = -alpha * phi
+    
+    #----------------------------------------------------------------------------------------------
+    # compute chemical potential of phi
+    
+    density_phi = np.real(phi * np.conj(phi))
+            
+    tmp_1 = np.conj(phi) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -nue_x_squared * np.fft.fft(phi) ) )
+    E1 = dx * np.sum(tmp_1)
+    
+    tmp_2 = np.conj(phi) * ( V * phi )
+    E2 = dx * np.sum(tmp_2)
+    
+    tmp_3 = np.conj(phi) * ( (g * density_phi) * phi )
+    E3 = dx * np.sum(tmp_3)
+    
+    N = dx * np.sum(density_phi)
+    
+    mue_phi = np.real((E1 + E2 + E3) / N)
+    #----------------------------------------------------------------------------------------------
+    
+    #----------------------------------------------------------------------------------------------
+    # settings for the figure
+    
+    density_min_tmp = 0.0
+    density_max_tmp = 4.0
+    
+    V_min_tmp = -8
+    V_max_tmp =  0
+    
+    density_min = density_min_tmp - 0.1 * (density_max_tmp - density_min_tmp)
+    density_max = density_max_tmp + 0.1 * (density_max_tmp - density_min_tmp)
+    
+    V_min = V_min_tmp - 0.1 * (V_max_tmp - V_min_tmp)
+    V_max = V_max_tmp + 0.1 * (V_max_tmp - V_min_tmp)
+    #-
+    
 
 
 #------------------------------------------------------------------------------
@@ -112,18 +160,14 @@ density_phi = np.real(phi * np.conj(phi))
 N_phi = dx * np.sum(density_phi)
 #------------------------------------------------------------------------------
 
-
-
-
-
 u_ref = phi
 u     = phi
 
 
-
-
 #------------------------------------------------------------------------------
-T = 20
+T = 200
+
+dt = 0.01
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -135,13 +179,13 @@ assert(dt_new == dt)
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# n_mod_times_analysis = 25
+n_mod_times_analysis = 25
 # n_mod_times_analysis = 1
 #------------------------------------------------------------------------------
 
 
 #------------------------------------------------------------------------------
-fig_1 = Figure2(x, -0.2, 2.2, -2, 22, V, u_ref)
+fig_1 = Figure2(x, density_min, density_max, V_min, V_max, V, u_ref)
 
 fig_1.update_u(u, u_ref)
 
@@ -179,22 +223,20 @@ if compute_ground_state == True:
     
     n_iter = 0
     
-    while n_iter < 50000:
+    while n_iter < 10000:
         
         if n_iter % n_mod_times_analysis == 0:
                 
             rel_error = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
             
-            print('n_iter:    {0:d}'.format(n_iter))
-            print('rel_error: {0:1.4e}'.format(rel_error))
+            print('n_iter:       {0:d}'.format(n_iter))
+            print('abs(dt_imag): {0:1.4e}'.format(abs(dt_imag)))
+            print('rel_error:    {0:1.4e}'.format(rel_error))
             print()
             
             fig_1.update_u(u, u_ref)
             
             fig_1.redraw()
-        
-        
-        
         
         if False:
         
@@ -260,7 +302,7 @@ if compute_ground_state == True:
         
         n_iter = n_iter + 1
         
-        if n_iter % 5000 == 0:
+        if n_iter % 2500 == 0:
             
             dt_imag = dt_imag / 2
     
@@ -268,35 +310,26 @@ if compute_ground_state == True:
         
 
 
-    
-"""
-import matplotlib.pyplot as plt
 
-path = "/home/jfmennemann/git/nls/pdf/ground_state/"
-  
-filepath = path + "stationary_solution" + ".pdf"
-
-plt.savefig(filepath, backend='pgf')
-"""
-
-
-
+input('press any key to continue ...')
 
 
 exp_nue_squared = np.exp( - 1.0j * dt * nue_x_squared * hbar / (2.0 * m) )
 
 for n in np.arange(times.size):
-    
+        
     if n % n_mod_times_analysis == 0:
         
         t = times[n]
         
-        # u_ref = Phi(x, 0.0, alpha, nu)
-        # rel_error = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
+        u_ref = phi * np.exp(-1j * t * mue_phi / hbar)
         
-        print('n: {0:d}'.format(n))
-        print('t: {0:1.2f}'.format(t))
-        # print('rel_error: {0:1.4e}'.format(rel_error))
+        rel_error = np.linalg.norm(u-u_ref) / np.linalg.norm(u_ref)
+        
+        print('n:         {0:d}'.format(n))
+        print('t:         {0:1.2f}'.format(t))
+        print('dt:        {0:1.4e}'.format(dt))
+        print('rel_error: {0:1.4e}'.format(rel_error))
         print()
         
         fig_1.update_u(u, u_ref)
@@ -304,34 +337,9 @@ for n in np.arange(times.size):
         fig_1.redraw()
     
     #==========================================================================
-    
-    if False:
-        
-        density = np.real(u * np.conj(u))
-        
-        tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -nue_x_squared * np.fft.fft(u) ) )
-        E1 = dx * np.sum(tmp_1)
-        
-        tmp_2 = np.conj(u) * ( V * u )
-        E2 = dx * np.sum(tmp_2)
-        
-        tmp_3 = np.conj(u) * ( (g * density) * u )
-        E3 = dx * np.sum(tmp_3)
-        
-        N = dx * np.sum(density)
-        
-        mue = np.real((E1 + E2 + E3) / N)
-    
-    else:
-        
-        mue = 0.0
-    
-    #==========================================================================
-    
-    #==========================================================================
     density = np.real(u * np.conj(u))
     
-    V_eff = V + g * density - mue
+    V_eff = V + g * density
     
     u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
@@ -347,7 +355,7 @@ for n in np.arange(times.size):
     #==========================================================================
     density = np.real(u * np.conj(u))
     
-    V_eff = V + g * density - mue
+    V_eff = V + g * density
     
     u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
@@ -357,7 +365,4 @@ for n in np.arange(times.size):
     
     
     
-
-
-
-
+    
