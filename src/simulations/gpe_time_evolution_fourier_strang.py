@@ -55,7 +55,6 @@ nue_x_squared = nue_x**2
 
 
 
-
 nr_example = 2
 
 if nr_example == 1:
