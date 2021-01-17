@@ -7,7 +7,7 @@ Time-integration method: Strang-Splitting
 """
 
 
-from scipy.sparse import spdiags
+import matplotlib.pyplot as plt
 
 
 import numpy as np
@@ -15,14 +15,23 @@ import numpy as np
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-from simulations.reference_solutions import Phi
-
 
 from simulations.figure_2 import Figure2
 
 
-from differentiation import fourier
 
+
+dt = 0.005
+
+n_mod_times_analysis = 50
+
+
+
+hbar = 1
+m = 1
+
+mue = 1
+g = 1
 
 
 x_min = -8
@@ -38,47 +47,69 @@ x = x_complete[0:-1]
 
 dx = x[1] - x[0]
 
+Lx = Jx * dx
+                 
+nue = np.arange(-Jx//2, Jx//2)
+# nue[0] = 0
+    
+nue = np.fft.fftshift(nue)
+    
+nue_x = (2 * np.pi / Lx) * nue
 
-mue_x = fourier.get_mue_x(Jx, dx)
-
-mue_squared = mue_x**2 
+nue_x_squared = nue_x**2 
 
 
+
+
+
+#------------------------------------------------------------------------------
+alpha = 1
+
+phi = np.exp(-alpha*x**2/2)
+
+phi_dd_approx = np.fft.ifftn(-nue_x_squared * np.fft.fftn(phi))
+
+phi_dd = -alpha * phi + alpha**2 * x**2 * phi 
+
+rel_error_phi_dd = np.linalg.norm(phi_dd_approx-phi_dd) / np.linalg.norm(phi_dd)
+
+# print(rel_error_phi_dd)
+# input()
+
+V = mue + 0.5 * (-alpha + alpha**2 * x**2) - g * np.abs(phi)**2
+#------------------------------------------------------------------------------
+
+
+"""
+from simulations.reference_solutions import Phi
 
 alpha = 4
 nu = 0.9
 
-Phi_of_x = Phi(x, 0.0, alpha, nu)
+phi = Phi(x, 0.0, alpha, nu)
 
+V = -alpha * phi
 
-u_ref = Phi_of_x.copy()
-u     = Phi_of_x.copy()
-
-
-V = -alpha * Phi_of_x
-
-diag_V = spdiags(np.array([V[0:-1]]), np.array([0]), Jx, Jx, 'csr')
+N_phi_formula = 4 * np.sqrt(2) * alpha * nu * ( (1.0/(2*nu)) * np.log( (1+nu) / (1-nu) ) - 1)
+"""
 
 
 
+density_phi = np.real(phi * np.conj(phi))
+
+N_phi = dx * np.sum(density_phi)
 
 
 
-density_0 = np.real(u * np.conj(u))
-    
-N0 = dx * np.sum(density_0)
 
-N0_formula = 4 * np.sqrt(2) * alpha * nu * ( (1.0/(2*nu)) * np.log( (1+nu) / (1-nu) ) - 1)
+u_ref = phi.copy()
+u     = phi.copy()
 
-print(N0)
-print(N0_formula)
-input()
+
 
 
 #------------------------------------------------------------------------------
 T = 20
-
-dt = 0.001
 
 n_times = np.int(np.round(T / dt)) + 1
         
@@ -90,13 +121,13 @@ assert(dt_new == dt)
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-n_mod_times_analysis = 25
+# n_mod_times_analysis = 25
 # n_mod_times_analysis = 1
 #------------------------------------------------------------------------------
 
 
 #------------------------------------------------------------------------------
-fig_1 = Figure2(x, 0.0, 4, -8, 2, V, u_ref)
+fig_1 = Figure2(x, 0.0, 4, 0, 20, V, u_ref)
 
 fig_1.update_u(u, u_ref)
 
@@ -107,23 +138,17 @@ fig_1.redraw()
 
 
 
-g = 1
-
-hbar = 1
-m = 1
-
-
-
 compute_ground_state = True
 
 if compute_ground_state == True:
 
     dt_imag = -1j * dt
     
-    exp_mue_squared = np.exp( - 1.0j * dt_imag * mue_squared * hbar / (2.0 * m) )
+    exp_nue_x_squared_imag = np.exp( - 1.0j * dt_imag * nue_x_squared * hbar / (2.0 * m) )
     
     
     n_iter = 0
+    
     while n_iter < 5000:
         
         if n_iter % n_mod_times_analysis == 0:
@@ -144,7 +169,8 @@ if compute_ground_state == True:
         density = np.real(u * np.conj(u))
         
         #----------------------------------------------------------------------
-        tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -mue_squared * np.fft.fft(u) ) )
+        """
+        tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -nue_x_squared * np.fft.fft(u) ) )
         E1 = dx * np.sum(tmp_1)
         
         tmp_2 = np.conj(u) * ( V * u )
@@ -152,25 +178,29 @@ if compute_ground_state == True:
         
         tmp_3 = np.conj(u) * ( (g * density) * u )
         E3 = dx * np.sum(tmp_3)
+        """
         #----------------------------------------------------------------------
-        
+        """
         N = dx * np.sum(density)
         
         mue = np.real((E1 + E2 + E3) / N)
         
-        # mue = 0.0
+        mue = 0.0
+        """
         #======================================================================
         
         #======================================================================
-        V_eff = V + g * density - mue
+        density = np.real(u * np.conj(u))
         
-        u = np.exp( - 1.0j * V * dt_imag / (2.0 * hbar) ) * u
+        V_eff = V + g * density
+        
+        u = np.exp( - 1.0j * V_eff * dt_imag / (2.0 * hbar) ) * u
         #======================================================================
         
         #======================================================================
         u = np.fft.fft(u)
         
-        u = exp_mue_squared * u
+        u = exp_nue_x_squared_imag * u
         
         u = np.fft.ifft(u)
         #======================================================================
@@ -178,7 +208,7 @@ if compute_ground_state == True:
         #======================================================================
         density = np.real(u * np.conj(u))
         
-        V_eff = V + g * density - mue
+        V_eff = V + g * density
         
         u = np.exp( - 1.0j * V_eff * dt_imag / (2.0 * hbar) ) * u
         #======================================================================
@@ -189,7 +219,7 @@ if compute_ground_state == True:
         #----------------------------------------------------------------------
         # normalize
         
-        N_desired = N0
+        N_desired = N_phi
         
         density = np.real(u * np.conj(u))
         
@@ -201,14 +231,23 @@ if compute_ground_state == True:
         
         n_iter = n_iter + 1
         
+        if n_iter % 5000 == 0:
+            
+            dt_imag = dt_imag / 2
+    
+            exp_nue_x_squared_imag = np.exp( - 1.0j * dt_imag * nue_x_squared * hbar / (2.0 * m) )
+        
     
 
+path = "/home/jfmennemann/git/nls/pdf/ground_state/"
+  
+filepath = path + "stationary_solution" + ".pdf"
+
+plt.savefig(filepath, backend='pgf')
 
 
 
-
-
-exp_mue_squared = np.exp( - 1.0j * dt * mue_squared * hbar / (2.0 * m) )
+exp_nue_squared = np.exp( - 1.0j * dt * nue_x_squared * hbar / (2.0 * m) )
 
 for n in np.arange(times.size):
     
@@ -229,9 +268,9 @@ for n in np.arange(times.size):
         fig_1.redraw()
     
     #==========================================================================
+    """
     density = np.real(u * np.conj(u))
     
-    """
     #--------------------------------------------------------------------------
     tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -mue_squared * np.fft.fft(u) ) )
     E1 = dx * np.sum(tmp_1)
@@ -246,21 +285,23 @@ for n in np.arange(times.size):
     N = dx * np.sum(density)
     
     mue = np.real((E1 + E2 + E3) / N)
+    
+    # mue = 0.0
     """
-    
-    mue = 0.0
     #==========================================================================
     
     #==========================================================================
-    V_eff = V + g * density - mue
+    density = np.real(u * np.conj(u))
     
-    u = np.exp( - 1.0j * V * dt / (2.0 * hbar) ) * u
+    V_eff = V + g * density
+    
+    u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
     
     #==========================================================================
     u = np.fft.fft(u)
     
-    u = exp_mue_squared * u
+    u = exp_nue_squared * u
     
     u = np.fft.ifft(u)
     #==========================================================================
@@ -268,7 +309,7 @@ for n in np.arange(times.size):
     #==========================================================================
     density = np.real(u * np.conj(u))
     
-    V_eff = V + g * density - mue
+    V_eff = V + g * density
     
     u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
@@ -278,3 +319,7 @@ for n in np.arange(times.size):
     
     
     
+
+
+
+
