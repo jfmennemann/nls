@@ -15,15 +15,14 @@ import numpy as np
 np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
-
 from simulations.figure_2 import Figure2
 
 
 
 
-dt = 0.005
+dt = 0.01
 
-n_mod_times_analysis = 50
+n_mod_times_analysis = 100
 
 
 
@@ -48,10 +47,10 @@ x = x_complete[0:-1]
 dx = x[1] - x[0]
 
 Lx = Jx * dx
-                 
+   
 nue = np.arange(-Jx//2, Jx//2)
-# nue[0] = 0
-    
+nue[0] = 0
+
 nue = np.fft.fftshift(nue)
     
 nue_x = (2 * np.pi / Lx) * nue
@@ -127,7 +126,7 @@ assert(dt_new == dt)
 
 
 #------------------------------------------------------------------------------
-fig_1 = Figure2(x, 0.0, 4, 0, 20, V, u_ref)
+fig_1 = Figure2(x, -0.2, 2.2, -2, 22, V, u_ref)
 
 fig_1.update_u(u, u_ref)
 
@@ -145,6 +144,24 @@ if compute_ground_state == True:
     dt_imag = -1j * dt
     
     exp_nue_x_squared_imag = np.exp( - 1.0j * dt_imag * nue_x_squared * hbar / (2.0 * m) )
+    
+    
+    # u = np.ones_like(x)
+    u = 0.05*(np.sin(x*2*np.pi/L)+1)
+    
+    #----------------------------------------------------------------------
+    # normalize
+    
+    N_desired = N_phi
+    
+    density = np.real(u * np.conj(u))
+    
+    N = dx * np.sum(density)
+    
+    u = np.sqrt(N_desired / N) * u
+    #----------------------------------------------------------------------
+    
+    
     
     
     n_iter = 0
@@ -268,11 +285,11 @@ for n in np.arange(times.size):
         fig_1.redraw()
     
     #==========================================================================
-    """
+    
     density = np.real(u * np.conj(u))
     
     #--------------------------------------------------------------------------
-    tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -mue_squared * np.fft.fft(u) ) )
+    tmp_1 = np.conj(u) * ( -(hbar**2 / (2 * m)) * np.fft.ifft( -nue_x_squared * np.fft.fft(u) ) )
     E1 = dx * np.sum(tmp_1)
     
     tmp_2 = np.conj(u) * ( V * u )
@@ -286,14 +303,14 @@ for n in np.arange(times.size):
     
     mue = np.real((E1 + E2 + E3) / N)
     
-    # mue = 0.0
-    """
+    mue = 0.0
+    
     #==========================================================================
     
     #==========================================================================
     density = np.real(u * np.conj(u))
     
-    V_eff = V + g * density
+    V_eff = V + g * density - mue
     
     u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
@@ -309,7 +326,7 @@ for n in np.arange(times.size):
     #==========================================================================
     density = np.real(u * np.conj(u))
     
-    V_eff = V + g * density
+    V_eff = V + g * density - mue
     
     u = np.exp( - 1.0j * V_eff * dt / (2.0 * hbar) ) * u
     #==========================================================================
