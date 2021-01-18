@@ -3,7 +3,7 @@ import numpy as np
 from numpy import pi
 
 
-def get_mue_x(Jx, dx):
+def get_nue_x(Jx, dx):
     
     assert(Jx % 2 == 0)
     
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     x_min = -pi
     x_max = +pi
 
-    Jx = 128
+    Jx = 8
     
     x = np.linspace(x_min, x_max, Jx, endpoint=False)
     
@@ -38,11 +38,11 @@ if __name__ == "__main__":
     
     
     
-    mue_x = get_mue_x(Jx, dx)
+    nue_x = get_nue_x(Jx, dx)
     
     
-    print('mue_x: ')
-    print(mue_x)
+    print('nue_x: ')
+    print(nue_x)
     print()
     
     u = np.exp(np.sin(x))
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     
     
     #==========================================================================
-    u_prime = np.fft.ifftn(1j * mue_x * np.fft.fftn(u))
+    u_prime = np.fft.ifftn(1j * nue_x * np.fft.fftn(u))
     #==========================================================================
     
     
