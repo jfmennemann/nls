@@ -7,7 +7,7 @@ from numpy import pi
 x_min = -pi
 x_max = +pi
 
-J = 8
+J = 16
 
 assert(J % 2 == 0)
 
@@ -20,7 +20,7 @@ assert(np.abs(x[index_center_x]) < 1e-14)
 dx = x[1] - x[0]
 
 L = J * dx
-             
+
 vec_nue_1st_derivative = np.arange(-J//2, J//2)
 vec_nue_1st_derivative[0] = 0
 
@@ -29,12 +29,11 @@ vec_nue_2nd_derivative = np.arange(-J//2, J//2)
 vec_nue_1st_derivative = np.fft.fftshift(vec_nue_1st_derivative)
 vec_nue_2nd_derivative = np.fft.fftshift(vec_nue_2nd_derivative)
 
-print(vec_nue_1st_derivative)
-print(vec_nue_2nd_derivative)
-print()
+# print(vec_nue_1st_derivative)
+# print(vec_nue_2nd_derivative)
+# print()
 # input('press any key ...')
 # print()
-
 
 vec_lambda_1st_derivative = ( 1j * (2 * pi / L) * vec_nue_1st_derivative )**1
 vec_lambda_2nd_derivative = ( 1j * (2 * pi / L) * vec_nue_2nd_derivative )**2
@@ -50,23 +49,23 @@ u_dd_ref = -np.sin(x) * u + np.cos(x) * u_d_ref
 
 
 
-u_d  = np.fft.ifftn(vec_lambda_1st_derivative * np.fft.fftn(u))
-u_dd = np.fft.ifftn(vec_lambda_2nd_derivative * np.fft.fftn(u))
+u_d  = np.fft.ifft(vec_lambda_1st_derivative * np.fft.fft(u))
+u_dd = np.fft.ifft(vec_lambda_2nd_derivative * np.fft.fft(u))
 
 
 
 u_d_imag_max  = np.max(np.imag(u_d))
 u_dd_imag_max = np.max(np.imag(u_dd))
 
-error_u_d  = np.linalg.norm(u_d  - u_d_ref,  np.inf)
-error_u_dd = np.linalg.norm(u_dd - u_dd_ref, np.inf)
+rel_error_u_d  = np.linalg.norm(u_d  - u_d_ref,  np.inf) / np.linalg.norm(u_d_ref,  np.inf)
+rel_error_u_dd = np.linalg.norm(u_dd - u_dd_ref, np.inf) / np.linalg.norm(u_dd_ref, np.inf)
 
 
 print('u_d_imag_max:  {0:1.4e}'.format(u_d_imag_max))
 print('u_dd_imag_max: {0:1.4e}'.format(u_dd_imag_max))
 print()
-print('error_u_d:     {0:1.4e}'.format(error_u_d))
-print('error_u_dd:    {0:1.4e}'.format(error_u_dd))
+print('rel_error_u_d:     {0:1.4e}'.format(rel_error_u_d))
+print('rel_error_u_dd:    {0:1.4e}'.format(rel_error_u_dd))
 
 
 

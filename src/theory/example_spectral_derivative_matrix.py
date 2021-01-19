@@ -9,7 +9,7 @@ np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 x_min = -pi
 x_max = +pi
 
-J = 4
+J = 128
 
 assert(J % 2 == 0)
 
@@ -86,6 +86,7 @@ D2 = np.matmul(F_inv, tmp_1)
 
 
 print(D2_ref)
+print()
 print(D2)
 print()
 
