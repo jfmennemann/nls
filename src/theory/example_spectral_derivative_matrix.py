@@ -6,10 +6,10 @@ np.set_printoptions(edgeitems=8, linewidth=200, precision=10)
 
 
 
-x_min = -pi
-x_max = +pi
+x_min = -1
+x_max = +2
 
-J = 128
+J = 32
 
 assert(J % 2 == 0)
 
@@ -17,7 +17,7 @@ x = np.linspace(x_min, x_max, J, endpoint=False)
 
 index_center_x = J//2
 
-assert(np.abs(x[index_center_x]) < 1e-14)
+# assert(np.abs(x[index_center_x]) < 1e-12)
 
 dx = x[1] - x[0]
 
@@ -46,20 +46,19 @@ vec_lambda_2nd_derivative = ( 1j * (2 * pi / L) * vec_nue_2nd_derivative )**2
 
 
 
-
+#==================================================================================================
 from scipy.linalg import circulant
 
-c = np.zeros((J,))
+d_2 = np.zeros((J,))
 
-c[0] = -pi**2/(3*dx**2) - 1.0/6.0
+d_2[0] = -J**2/12 - 1.0/6.0
 
-for j in np.arange(1,J):
+for k in np.arange(1,J):
     
-    c[j] = -(-1)**j / ( 2 * np.sin(j * dx / 2)**2 )
+    d_2[k] = -(-1)**k / ( 2 * np.sin(k*pi/J)**2 )
 
-
-D2_ref = circulant(c)
-
+D2_ref = (2*pi/L)**2 * circulant(d_2)
+#==================================================================================================
 
 
 
@@ -85,31 +84,15 @@ D2 = np.matmul(F_inv, tmp_1)
 
 
 
-print(D2_ref)
-print()
-print(D2)
-print()
+# print(D2_ref)
+# print()
+# print(D2)
+# print()
 
 
 rel_error = np.linalg.norm(D2 - D2_ref) / np.linalg.norm(D2_ref)
 
-print(rel_error)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print('rel_error: {0:1.4e}'.format(rel_error))
 
 
 
